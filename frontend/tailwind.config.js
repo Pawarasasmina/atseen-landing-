@@ -1,0 +1,2 @@
+/** @type {import('tailwindcss').Config} */
+export default { content: ['./index.html', './src/**/*.{js,jsx}'], theme: { extend: { colors: { ink: '#06080B', night: '#0A0C0F', surface: '#12151B', raised: '#181D25', ice: '#9CCBFF', deep: '#6FA9E8', frost: '#BFE3FF', success: '#6ECF97', danger: '#F17878' }, fontFamily: { sans: ['-apple-system','BlinkMacSystemFont','SF Pro Text','Segoe UI','Roboto','sans-serif'] }, boxShadow: { glow: '0 0 60px rgba(156,203,255,.12)' } } }, plugins: [] };
