@@ -39,8 +39,12 @@ export default function CreatorForm() {
       toast.success('You’re on the creator list.');
     } catch (error) {
       const fields = error.response?.data?.errors;
-      fields?.forEach(({ field, message }) => setError(field, { message }, { shouldFocus: true }));
-      toast.error('We couldn’t send your details. Please try again.');
+      if (fields?.length) {
+        fields.forEach(({ field, message }, index) => setError(field, { type: 'server', message }, { shouldFocus: index === 0 }));
+        if (!fields.some(({ field }) => field === 'email')) toast.error(error.response?.data?.message || 'Please check the highlighted fields.');
+        return;
+      }
+      toast.error(error.response?.data?.message || 'We could not send your details. Please try again.');
     }
   };
   const invalid = (formErrors) => {
