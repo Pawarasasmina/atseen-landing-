@@ -8,6 +8,7 @@ const resendEndpoint = 'https://api.resend.com/emails';
 const cleanHandle = (value = '') => String(value).trim().replace(/^@+/, '').slice(0, 80);
 const cleanString = (value = '', max = 1000) => String(value || '').trim().slice(0, max);
 const getOffset = () => Number.parseInt(process.env.APPLICATION_COUNT_OFFSET || '0', 10) || 0;
+const emailDeliveryEnabled = () => Boolean(process.env.RESEND_API_KEY?.trim());
 
 function buildApplyPayload(body, req) {
   const niches = Array.isArray(body.niches) ? body.niches.map((item) => cleanString(item, 80)).filter(Boolean).slice(0, 12) : [];
@@ -101,13 +102,13 @@ export const createApplication = asyncHandler(async (req, res) => {
   if (req.body.website) return res.status(200).json(success);
   const payload = buildApplyPayload(req.body, req);
   const existing = await Lead.findOne({ email: payload.email });
-  const updatePayload = existing ? Object.fromEntries(Object.entries(payload).filter(([key]) => key !== 'status')) : payload;
+  const updatePayload = Object.fromEntries(Object.entries(payload).filter(([key]) => key !== 'status'));
   const lead = await Lead.findOneAndUpdate(
     { email: payload.email },
     { $set: updatePayload, $setOnInsert: { status: 'new' } },
     { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
   );
-  await notifyApplication(payload, req);
+  if (emailDeliveryEnabled()) await notifyApplication(payload, req);
   return res.status(existing ? 200 : 201).json({ ...success, id: lead._id });
 });
 

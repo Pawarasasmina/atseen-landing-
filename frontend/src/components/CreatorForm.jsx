@@ -57,9 +57,9 @@ function getTracking() {
   };
 }
 
-function Field({ label, error, children }) {
+function Field({ label, error, children, className = '' }) {
   return (
-    <label className="app-field">
+    <label className={`app-field ${className}`}>
       <span>{label}</span>
       {children}
       {error && <em role="alert">{error}</em>}
@@ -175,10 +175,10 @@ export default function CreatorForm() {
       <div className="app-field md:col-span-2"><span>What do you create?</span><div className="niche-grid">{categories.slice(0, 10).map((niche) => <button className={niches.includes(niche) ? 'niche-chip active' : 'niche-chip'} type="button" key={niche} onClick={() => toggleNiche(niche)}>{niche}</button>)}</div></div>
       <Field label="Instagram" error={errors.instagram}><input className="field" value={form.instagram} onFocus={() => startSocialHandle('instagram')} onChange={(event) => setSocialValue('instagram', event.target.value)} placeholder="@yourhandle" /></Field>
       <Field label="TikTok"><input className="field" value={form.tiktok} onFocus={() => startSocialHandle('tiktok')} onChange={(event) => setSocialValue('tiktok', event.target.value)} placeholder="@yourhandle" /></Field>
-      <Field label="Audience"><select className="field" value={form.audience} onChange={(event) => setValue('audience', event.target.value)}>{audiences.map((audience) => <option key={audience}>{audience}</option>)}</select></Field>
+      <Field label="Audience"><div className="audience-select"><select className="field" value={form.audience} onChange={(event) => setValue('audience', event.target.value)}>{audiences.map((audience) => <option key={audience}>{audience}</option>)}</select><ChevronDown size={17} aria-hidden="true" /></div></Field>
       <Field label="Email" error={errors.email}><input className="field" type="email" required value={form.email} onChange={(event) => setValue('email', event.target.value)} placeholder="you@example.com" /></Field>
-      <Field label="What is your world about?" error={errors.why}><textarea className="field min-h-28 resize-y" maxLength={300} value={form.why} onChange={(event) => setValue('why', event.target.value)} placeholder="The thing you live that people would step into." /></Field>
-            <Field label="Phone"><div className="phone-field"><div className="phone-region-wrap"><button type="button" className="phone-region-trigger" aria-label="Select phone region" aria-haspopup="listbox" aria-expanded={phonePickerOpen} onClick={() => setPhonePickerOpen((open) => !open)}>{form.phoneRegion}<ChevronDown size={14} /></button>{phonePickerOpen && <div className="phone-region-menu" role="listbox">{phoneRegions.map(([code, country]) => <button key={code} type="button" role="option" aria-selected={form.phoneRegion === code} onClick={() => { setValue('phoneRegion', code); setPhonePickerOpen(false); }}><span>{country}</span></button>)}</div>}</div><input className="field" inputMode="tel" autoComplete="tel-national" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Mobile number" /></div></Field>
+      <Field label="What is your world about?" error={errors.why} className="world-field"><textarea className="field min-h-28 resize-y" maxLength={300} value={form.why} onChange={(event) => setValue('why', event.target.value)} placeholder="The thing you live that people would step into." /></Field>
+            <Field label="Phone" className="phone-app-field"><div className="phone-field"><div className="phone-region-wrap"><button type="button" className="phone-region-trigger" aria-label="Select phone region" aria-haspopup="listbox" aria-expanded={phonePickerOpen} onClick={() => setPhonePickerOpen((open) => !open)}>{form.phoneRegion}<ChevronDown size={14} /></button>{phonePickerOpen && <div className="phone-region-menu" role="listbox">{phoneRegions.map(([code, country]) => <button key={code} type="button" role="option" aria-selected={form.phoneRegion === code} onClick={() => { setValue('phoneRegion', code); setPhonePickerOpen(false); }}><span>{country}</span></button>)}</div>}</div><input className="field" inputMode="tel" autoComplete="tel-national" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Mobile number" /></div></Field>
       <button type="submit" disabled={busy} className="send-button md:col-span-2">{busy ? <LoaderCircle className="animate-spin" size={18} /> : <Send size={17} />}Send application</button>
       <p className="form-fine md:col-span-2"> Your data stays with @seen, never sold and never shared.</p>
     </form>

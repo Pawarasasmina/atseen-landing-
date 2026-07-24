@@ -63,9 +63,13 @@ function AmbientBackground() {
       <div className="aurora aurora-two" />
       <div className="light-beam beam-one" />
       <div className="light-beam beam-two" />
-      <div className="star-field">{Array.from({ length: 24 }, (_, index) => <i key={index} style={{ '--i': index }} />)}</div>
+      <div className="star-field">{Array.from({ length: 72 }, (_, index) => <i key={index} style={{ '--i': index }} />)}</div>
     </div>
   );
+}
+
+function PageStars() {
+  return <div className="page-star-field" aria-hidden="true">{Array.from({ length: 72 }, (_, index) => <i key={index} style={{ '--i': index }} />)}</div>;
 }
 
 function PointerGlow() {
@@ -153,8 +157,8 @@ function FoundingProfileMock() {
     <div className="founding-profile-wrap">
       <div className="profile-callout"><span />the Founding seal</div>
       <div className="founding-profile">
-        <div className="profile-cover" />
-        <div className="profile-avatar">EB</div>
+        <div className="profile-cover"><img src="/images/ethan-brooks-cover.png" alt="" /></div>
+        <div className="profile-avatar"><img src="/images/ethan-brooks-avatar.png" alt="Ethan Brooks" /></div>
         <div className="profile-name">Ethan Brooks <BadgeCheck size={17} /> <EyeMark /></div>
         <p>@ethan</p>
         <div className="profile-state"><i />At the gym</div>
@@ -223,7 +227,6 @@ export default function LandingPage() {
             <div className="hero-actions"><a href="#apply" className="glow-button"><span>Apply now <ArrowRight size={17} /></span></a><a href="#founding" className="outline-button">See what you get <ArrowDown size={16} /></a></div>
             <small><b>{count}</b>  creators have already applied </small>
           </motion.div>
-          <motion.div initial={{ opacity: 0, scale: .94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: .8, delay: .12 }} className="hero-profile"><FoundingProfileMock /></motion.div>
         </section>
 
         <section id="founding" className="section-space relative border-y border-white/[.06]">
@@ -253,7 +256,7 @@ export default function LandingPage() {
         <section id="apply" className="section-space join-section">
           <div className="mx-auto max-w-6xl px-5">
             <div className="join-shell application-shell"><div className="join-light" />
-              <Reveal className="join-copy"><div className="eyebrow"><span /> The application</div><h2>Request your invite.</h2><p>We read every application ourselves. Follower count matters less than a World worth stepping into.</p><div className="join-points"><span><Check size={14} /> Confirmation, not approval</span><span><Mail size={14} /> Invite lands here first</span><span><ShieldCheck size={14} /> No Telegram bots</span></div></Reveal>
+              <Reveal className="join-copy"><div className="eyebrow"><span /> The application</div><h2>Request your invite.</h2><p>We read every application ourselves. Follower count matters less than a World worth stepping into.</p><div className="join-points"><span><Check size={14} /> Confirmation, not approval</span><span><Mail size={14} /> Invite lands here first</span><span><ShieldCheck size={14} /> No Telegram bots</span></div><div className="join-signal" aria-hidden="true"><span><i /> Founding signal</span><b>Ready in 02:00</b></div><div className="join-preview"><div className="join-preview-head"><span>Founding path</span><b><i /> Live</b></div><div className="join-preview-steps"><span><b>01</b> Apply</span><span><b>02</b> Review</span><span><b>03</b> Invite</span></div><p>Every application gets a personal review.</p></div><div className="join-signoff"><Eye size={23} strokeWidth={1.5} /><div><b>@seen</b><span>We’ll meet there soon.</span></div></div></Reveal>
               <Reveal className="join-form"><CreatorForm /></Reveal>
             </div>
           </div>
