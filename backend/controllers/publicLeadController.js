@@ -1,4 +1,5 @@
 import Lead from '../models/Lead.js';
+import { randomBytes } from 'node:crypto';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { hashIp, normalizeEmail } from '../utils/security.js';
 
@@ -62,9 +63,19 @@ function fieldRows(payload) {
     ['UTM source', payload.utm.source || '-'],
     ['UTM medium', payload.utm.medium || '-'],
     ['UTM campaign', payload.utm.campaign || '-'],
+    ['Referral code', payload.referralCode || '-'],
+    ['Referred by', payload.referredBy ? `${payload.referredBy.fullName} (${payload.referredBy.email})` : 'Direct / no referral'],
   ];
 }
 
+async function createReferralCode() {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const referralCode = `seen-${randomBytes(6).toString('hex')}`;
+    const codeTaken = await Lead.exists({ referralCode });
+    if (!codeTaken) return referralCode;
+  }
+  throw new Error('Could not generate a unique referral code');
+}
 function escapeHtml(value) {
   return String(value).replace(/[&<>"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char]));
 }
@@ -86,8 +97,7 @@ function notificationEmail(payload) {
 
 function confirmationEmail(payload, req) {
   const baseUrl = process.env.CLIENT_URL?.split(',')[0] || `${req.protocol}://${req.get('host')}`;
-  const refSeed = payload.instagram || payload.tiktok || payload.email.split('@')[0] || 'creator';
-  const inviteUrl = `${baseUrl.replace(/\/$/, '')}/?ref=${encodeURIComponent(refSeed)}`;
+  const inviteUrl = `${baseUrl.replace(/\/$/, '')}/?ref=${encodeURIComponent(payload.referralCode)}`;
   return `<div style="margin:0;background:#06080B;color:#F0F4FA;font-family:Inter,Arial,sans-serif;padding:34px"><div style="max-width:620px;margin:auto;border:1px solid rgba(156,203,255,.18);border-radius:24px;background:#10141C;padding:30px"><div style="color:#9CCBFF;font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase">@seen founding circle</div><h1 style="font-size:34px;line-height:1.05;margin:18px 0 14px">You've been seen âœ¦</h1><p style="color:#B8C4D3;line-height:1.7">Thanks for applying to the founding circle of @seen. Your place in line is saved. When founding registration opens, your invite lands here first.</p><a href="${escapeHtml(inviteUrl)}" style="display:inline-block;margin-top:18px;border-radius:999px;background:#9CCBFF;color:#06080B;padding:14px 22px;text-decoration:none;font-weight:800">Invite a creator you rate</a><p style="margin-top:24px;color:#6F7A8B;font-size:13px"><a href="https://instagram.com/_atseen" style="color:#9CCBFF">Instagram</a> Â· <a href="https://t.me/atseen" style="color:#9CCBFF">Telegram</a></p></div></div>`;
 }
 
@@ -101,15 +111,20 @@ async function notifyApplication(payload, req) {
 export const createApplication = asyncHandler(async (req, res) => {
   if (req.body.website) return res.status(200).json(success);
   const payload = buildApplyPayload(req.body, req);
-  const existing = await Lead.findOne({ email: payload.email });
-  const updatePayload = Object.fromEntries(Object.entries(payload).filter(([key]) => key !== 'status'));
+  const existing = await Lead.findOne({ email: payload.email }).populate('referredBy', 'fullName email referralCode');
+  const referrer = payload.ref ? await Lead.findOne({ referralCode: payload.ref }).select('fullName email referralCode') : null;
+  const referralCode = existing?.referralCode || await createReferralCode();
+  const updatePayload = Object.fromEntries(Object.entries(payload).filter(([key]) => !['status', 'ref'].includes(key)));
   const lead = await Lead.findOneAndUpdate(
     { email: payload.email },
-    { $set: updatePayload, $setOnInsert: { status: 'new' } },
+    {
+      $set: { ...updatePayload, referralCode },
+      $setOnInsert: { status: 'new', ref: referrer?.referralCode || '', referredBy: referrer?._id || null },
+    },
     { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
-  );
-  if (emailDeliveryEnabled()) await notifyApplication(payload, req);
-  return res.status(existing ? 200 : 201).json({ ...success, id: lead._id });
+  ).populate('referredBy', 'fullName email referralCode');
+  if (emailDeliveryEnabled()) await notifyApplication(lead, req);
+  return res.status(existing ? 200 : 201).json({ ...success, id: lead._id, referralCode: lead.referralCode });
 });
 
 export const createLead = asyncHandler(async (req, res) => {

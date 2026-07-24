@@ -4,7 +4,7 @@ import { AppError } from '../utils/appError.js';
 import { escapeRegex } from '../utils/security.js';
 
 const getLeadOrFail = async (id) => {
-  const lead = await Lead.findById(id);
+  const lead = await Lead.findById(id).populate('referredBy', 'fullName email referralCode');
   if (!lead) throw new AppError('Lead not found', 404);
   return lead;
 };
@@ -23,7 +23,7 @@ export const listLeads = asyncHandler(async (req, res) => {
   const page = Number(req.query.page) || 1;
   const limit = Math.min(Number(req.query.limit) || 20, 100);
   const sort = ['-submittedAt', 'submittedAt', 'fullName', '-fullName'].includes(req.query.sort) ? req.query.sort : '-submittedAt';
-  const [leads, total] = await Promise.all([Lead.find(filter).sort(sort).skip((page - 1) * limit).limit(limit), Lead.countDocuments(filter)]);
+  const [leads, total] = await Promise.all([Lead.find(filter).populate('referredBy', 'fullName email referralCode').sort(sort).skip((page - 1) * limit).limit(limit), Lead.countDocuments(filter)]);
   res.json({ success: true, leads, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
 });
 

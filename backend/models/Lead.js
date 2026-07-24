@@ -17,6 +17,8 @@ const leadSchema = new mongoose.Schema({
   creatorDescription: { type: String, trim: true, maxlength: 1000, default: '' },
   consentGiven: { type: Boolean, default: true },
   ref: { type: String, trim: true, maxlength: 120, default: '' },
+  referralCode: { type: String, trim: true, unique: true, sparse: true, maxlength: 32 },
+  referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead', default: null, index: true },
   utm: {
     source: { type: String, trim: true, maxlength: 120, default: '' },
     medium: { type: String, trim: true, maxlength: 120, default: '' },

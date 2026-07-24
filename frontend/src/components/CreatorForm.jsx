@@ -51,9 +51,12 @@ function normalizeHandle(value) {
 
 function getTracking() {
   const params = new URLSearchParams(window.location.search);
+  const hashQuery = window.location.hash.includes('?') ? window.location.hash.split('?').slice(1).join('?') : '';
+  const hashParams = new URLSearchParams(hashQuery);
+  const value = (key) => params.get(key) || hashParams.get(key) || '';
   return {
-    ref: params.get('ref') || '',
-    utm: Object.fromEntries(trackedParams.map((key) => [key, params.get(key) || ''])),
+    ref: value('ref').trim().toLowerCase(),
+    utm: Object.fromEntries(trackedParams.map((key) => [key, value(key)])),
   };
 }
 
@@ -73,6 +76,7 @@ export default function CreatorForm() {
   const [errors, setErrors] = useState({});
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
   const [phonePickerOpen, setPhonePickerOpen] = useState(false);
   const [shareHint, setShareHint] = useState('Send this page to someone who deserves to be first.');
 
@@ -80,6 +84,8 @@ export default function CreatorForm() {
     const seed = normalizeHandle(form.instagram) || normalizeHandle(form.tiktok) || form.email.split('@')[0] || form.name.split(' ')[0] || 'creator';
     return seed.toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'creator';
   }, [form.email, form.instagram, form.name, form.tiktok]);
+
+  const inviteCode = referralCode || personalRef;
 
   const setValue = (key, value) => setForm((current) => ({ ...current, [key]: value }));
   const setSocialValue = (key, value) => {
@@ -96,7 +102,7 @@ export default function CreatorForm() {
   };
 
   const shareInvite = async () => {
-    const url = `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(personalRef)}`;
+    const url = `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(inviteCode)}`;
     const text = 'I just applied to be a founding creator on @seen. You should be there first too:';
     try {
       if (navigator.share) await navigator.share({ title: '@seen Founding Creators', text, url });
@@ -131,7 +137,7 @@ export default function CreatorForm() {
     try {
       const tracking = getTracking();
       const { phoneRegion, ...application } = form;
-      await api.post('/apply', {
+      const { data } = await api.post('/apply', {
         ...application,
         phone: application.phone.trim() ? [phoneRegion, application.phone.trim()].join(' ') : '',
         instagram: normalizeHandle(form.instagram),
@@ -141,7 +147,8 @@ export default function CreatorForm() {
         ts: new Date().toISOString(),
         ...tracking.utm,
       });
-      window.dispatchEvent(new Event('application-count-refresh'));
+      setReferralCode(data.referralCode || '');
+      window.dispatchEvent(new Event('application-count-refresh')); 
       setSent(true);
       toast.success("You've been seen.");
     } catch (error) {
