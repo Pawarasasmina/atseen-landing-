@@ -244,6 +244,12 @@ export default function LandingPage() {
 
         <ProductShowcase />
 
+        <section className="founder-quote" aria-label="A note from the @seen founding team">
+          <div className="founder-quote-glow" aria-hidden="true" />
+          <blockquote>“Followers look. Fans invest.<br />We built the place where they can.”</blockquote>
+          <p>— the @seen founding team</p>
+        </section>
+
         <section id="apply" className="section-space join-section">
           <div className="mx-auto max-w-6xl px-5">
             <div className="join-shell application-shell"><div className="join-light" />
@@ -253,7 +259,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="final-cta"><div className="final-orbit" aria-hidden="true"><i /><i /><i /></div><Reveal className="relative z-10 mx-auto max-w-4xl px-5 text-center"><Eye className="mx-auto text-ice" size={34} strokeWidth={1.2} /><p className="section-label mt-7 justify-center">The first Worlds are opening</p><h2>Will yours be one of them?</h2><a href="#apply" className="glow-button mt-9"><span>Apply to the founding circle <ArrowRight size={17} /></span></a></Reveal></section>
       </main>
       <footer className="site-footer">
         <div className="footer-stars" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
