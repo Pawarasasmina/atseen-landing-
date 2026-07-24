@@ -5,13 +5,19 @@ import {
   ArrowRight,
   BadgeCheck,
   Check,
+  ClipboardCheck,
+  Coins,
   Eye,
+  Gem,
   Globe2,
   Instagram,
+  LockKeyhole,
   Mail,
   MessageCircle,
+  Rocket,
   Send,
   ShieldCheck,
+  SlidersHorizontal,
   Sparkles,
 } from 'lucide-react';
 import Brand from '../components/Brand';
@@ -21,17 +27,24 @@ import Reveal from '../components/Reveal';
 import api from '../lib/api';
 
 const foundingPerks = [
-  ['Founding terms', 'Special conditions locked from day one, before @seen opens to every creator.'],
-  ['The Founding badge', 'A visible seal beside your name that tells fans you were here before the doors opened.'],
-  ['Fans pay to reach you', 'Direct Access gives followers a private window where every reply is paid and guaranteed.'],
-  ['Your world, your prices', 'Premium experiences and private Worlds that your followers unlock on your terms.'],
-  ['Shape the product', 'A direct line to the team while the founding circle decides what @seen becomes.'],
+  { title: 'Founding terms', text: 'Special conditions locked from day one, before @seen opens to every creator.', icon: LockKeyhole, signal: '01' },
+  { title: 'The Founding badge', text: 'A visible seal beside your name that tells fans you were here before the doors opened.', icon: BadgeCheck, signal: '02' },
+  { title: 'Fans pay to reach you', text: 'Direct Access gives followers a private window where every reply is paid and guaranteed.', icon: Coins, signal: '03' },
+  { title: 'Your world, your prices', text: 'Premium experiences and private Worlds that your followers unlock on your terms.', icon: Globe2, signal: '04' },
+  { title: 'Shape the product', text: 'A direct line to the team while the founding circle decides what @seen becomes.', icon: SlidersHorizontal, signal: '05' },
 ];
 
 const steps = [
-  ['01', 'Apply', 'Two minutes: who you are, where you create, and the World people would step into.'],
-  ['02', 'We invite you', 'If it is a fit, your personal founding registration invite lands in your inbox first.'],
-  ['03', 'You open with us', 'Your profile, badge, Worlds and Direct Access are ready when the doors open.'],
+  ['01', 'Apply', 'Two minutes: who you are, where you create, and the World people would step into.', ClipboardCheck],
+  ['02', 'We invite you', 'If it is a fit, your personal founding registration invite lands in your inbox first.', Mail],
+  ['03', 'You open with us', 'Your profile, badge, Worlds and Direct Access are ready when the doors open.', Rocket],
+];
+
+const proofPoints = [
+  ['Founding', 'badge and terms', Gem],
+  ['Paid', 'Direct Access replies', Coins],
+  ['Private', 'Worlds and premium drops', LockKeyhole],
+  ['Manual', 'weekly review', ShieldCheck],
 ];
 
 const modes = {
@@ -233,15 +246,15 @@ export default function LandingPage() {
           <div className="section-glow section-glow-left" />
           <div className="mx-auto max-w-6xl px-5">
             <Reveal className="grid items-end gap-8 lg:grid-cols-[1fr_.75fr]"><div><p className="section-label">Why founding</p><h2 className="section-title max-w-4xl">What founding creators<br /><span>get first.</span></h2></div><p className="section-intro">@seen will open to every creator. The founding circle gets in earlier, with conditions locked from day one.</p></Reveal>
-            <div className="perk-list">{foundingPerks.map(([title, text], index) => <Reveal className="perk-row" key={title} style={{ transitionDelay: `${index * 70}ms` }}><span>{index === 1 ? <Eye size={18} /> : <Sparkles size={17} />}</span><p><b>{title}</b><em>{text}</em></p></Reveal>)}</div>
+            <div className="perk-list">{foundingPerks.map(({ title, text, icon: Icon, signal }, index) => <Reveal className="perk-row" key={title} style={{ transitionDelay: `${index * 70}ms` }}><span className="perk-icon"><Icon size={19} /></span><p><small>{signal} / founding signal</small><b>{title}</b><em>{text}</em></p><i className="perk-orbit" aria-hidden="true" /></Reveal>)}</div>
           </div>
         </section>
 
         <section id="experience" className="section-space relative">
           <div className="mx-auto max-w-7xl px-5">
             <Reveal className="mb-14 text-center"><p className="section-label justify-center">How it works</p><h2 className="section-title mx-auto max-w-4xl">Three steps.<br /><span>Then the doors open.</span></h2></Reveal>
-            <div className="experience-panel"><div className="experience-path" aria-hidden="true"><span /><span /><span /></div>{steps.map(([number, title, text]) => <Reveal className="experience-step" key={title}><span>{number}</span><div><h3>{title}</h3><p>{text}</p></div></Reveal>)}</div>
-            <div className="metric-row"><div className="metric"><b>Founding</b><span>badge and terms</span></div><div className="metric"><b>Paid</b><span>Direct Access replies</span></div><div className="metric"><b>Private</b><span>Worlds and premium drops</span></div><div className="metric"><b>Manual</b><span>weekly review</span></div></div>
+            <div className="experience-panel"><div className="experience-path" aria-hidden="true"><span /><span /><span /></div>{steps.map(([number, title, text, Icon]) => <Reveal className="experience-step" key={title}><span className="experience-index">{number}</span><span className="experience-icon"><Icon size={21} /></span><div><h3>{title}</h3><p>{text}</p></div></Reveal>)}</div>
+            <div className="metric-row">{proofPoints.map(([title, text, Icon]) => <div className="metric" key={title}><span className="metric-icon"><Icon size={16} /></span><b>{title}</b><span>{text}</span></div>)}</div>
           </div>
         </section>
 
@@ -249,6 +262,7 @@ export default function LandingPage() {
 
         <section className="founder-quote" aria-label="A note from the @seen founding team">
           <div className="founder-quote-glow" aria-hidden="true" />
+          <div className="quote-signal" aria-hidden="true"><Eye size={21} /><i /><Sparkles size={14} /></div>
           <blockquote>“Followers look. Fans invest.<br />We built the place where they can.”</blockquote>
           <p>— the @seen founding team</p>
         </section>
