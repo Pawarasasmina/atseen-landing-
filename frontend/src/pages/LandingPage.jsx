@@ -168,7 +168,7 @@ function FoundingProfileMock() {
 function SignalMarquee() {
   return (
     <div className="signal-marquee" aria-hidden="true">
-      <div>{Array.from({ length: 2 }, (_, group) => <span key={group}><b>REAL CONNECTION</b><i>âœ¦</i><b>CREATOR VALUE</b><i>âœ¦</i><b>SEENS</b><i>âœ¦</i><b>WORLDS</b><i>âœ¦</i><b>DIRECT ACCESS</b><i>âœ¦</i></span>)}</div>
+      <div>{Array.from({ length: 2 }, (_, group) => <span key={group}><b>REAL CONNECTION</b><i /><b>CREATOR VALUE</b><i /><b>SEENS</b><i /><b>WORLDS</b><i /><b>DIRECT ACCESS</b><i /></span>)}</div>
     </div>
   );
 }

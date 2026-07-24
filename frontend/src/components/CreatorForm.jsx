@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Check, LoaderCircle, Send, Share2 } from 'lucide-react';
+import { Check, ChevronDown, LoaderCircle, Send, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import { audiences, categories } from '../constants';
@@ -13,10 +13,37 @@ const defaults = {
   why: '',
   email: '',
   phone: '',
+  phoneRegion: '+971',
   website: '',
 };
 
 const trackedParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+const phoneRegions = [
+  ['+94', 'Sri Lanka'],
+  ['+1', 'United States & Canada'],
+  ['+44', 'United Kingdom'],
+  ['+61', 'Australia'],
+  ['+91', 'India'],
+  ['+971', 'United Arab Emirates'],
+  ['+65', 'Singapore'],
+  ['+49', 'Germany'],
+  ['+33', 'France'],
+  ['+39', 'Italy'],
+  ['+34', 'Spain'],
+  ['+31', 'Netherlands'],
+  ['+46', 'Sweden'],
+  ['+47', 'Norway'],
+  ['+55', 'Brazil'],
+  ['+27', 'South Africa'],
+  ['+234', 'Nigeria'],
+  ['+81', 'Japan'],
+  ['+82', 'South Korea'],
+  ['+63', 'Philippines'],
+  ['+62', 'Indonesia'],
+  ['+60', 'Malaysia'],
+  ['+92', 'Pakistan'],
+  ['+880', 'Bangladesh'],
+];
 
 function normalizeHandle(value) {
   return value.trim().replace(/^@+/, '');
@@ -46,6 +73,7 @@ export default function CreatorForm() {
   const [errors, setErrors] = useState({});
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [phonePickerOpen, setPhonePickerOpen] = useState(false);
   const [shareHint, setShareHint] = useState('Send this page to someone who deserves to be first.');
 
   const personalRef = useMemo(() => {
@@ -54,6 +82,14 @@ export default function CreatorForm() {
   }, [form.email, form.instagram, form.name, form.tiktok]);
 
   const setValue = (key, value) => setForm((current) => ({ ...current, [key]: value }));
+  const setSocialValue = (key, value) => {
+    const handle = value.replace(/\s/g, '').replace(/^@+/, '');
+    setValue(key, handle ? `@${handle}` : '');
+  };
+
+  const startSocialHandle = (key) => {
+    if (!form[key]) setValue(key, '@');
+  };
 
   const toggleNiche = (niche) => {
     setNiches((current) => current.includes(niche) ? current.filter((item) => item !== niche) : [...current, niche]);
@@ -94,8 +130,10 @@ export default function CreatorForm() {
     setBusy(true);
     try {
       const tracking = getTracking();
+      const { phoneRegion, ...application } = form;
       await api.post('/apply', {
-        ...form,
+        ...application,
+        phone: application.phone.trim() ? [phoneRegion, application.phone.trim()].join(' ') : '',
         instagram: normalizeHandle(form.instagram),
         tiktok: normalizeHandle(form.tiktok),
         niches,
@@ -135,12 +173,12 @@ export default function CreatorForm() {
       <Field label="Your name" error={errors.name}><input className="field" required value={form.name} onChange={(event) => setValue('name', event.target.value)} placeholder="Full name" /></Field>
       <Field label="City"><input className="field" value={form.city} onChange={(event) => setValue('city', event.target.value)} placeholder="Your city" /></Field>
       <div className="app-field md:col-span-2"><span>What do you create?</span><div className="niche-grid">{categories.slice(0, 10).map((niche) => <button className={niches.includes(niche) ? 'niche-chip active' : 'niche-chip'} type="button" key={niche} onClick={() => toggleNiche(niche)}>{niche}</button>)}</div></div>
-      <Field label="Instagram" error={errors.instagram}><input className="field" value={form.instagram} onChange={(event) => setValue('instagram', event.target.value)} placeholder="@yourhandle" /></Field>
-      <Field label="TikTok"><input className="field" value={form.tiktok} onChange={(event) => setValue('tiktok', event.target.value)} placeholder="@yourhandle" /></Field>
+      <Field label="Instagram" error={errors.instagram}><input className="field" value={form.instagram} onFocus={() => startSocialHandle('instagram')} onChange={(event) => setSocialValue('instagram', event.target.value)} placeholder="@yourhandle" /></Field>
+      <Field label="TikTok"><input className="field" value={form.tiktok} onFocus={() => startSocialHandle('tiktok')} onChange={(event) => setSocialValue('tiktok', event.target.value)} placeholder="@yourhandle" /></Field>
       <Field label="Audience"><select className="field" value={form.audience} onChange={(event) => setValue('audience', event.target.value)}>{audiences.map((audience) => <option key={audience}>{audience}</option>)}</select></Field>
       <Field label="Email" error={errors.email}><input className="field" type="email" required value={form.email} onChange={(event) => setValue('email', event.target.value)} placeholder="you@example.com" /></Field>
       <Field label="What is your world about?" error={errors.why}><textarea className="field min-h-28 resize-y" maxLength={300} value={form.why} onChange={(event) => setValue('why', event.target.value)} placeholder="The thing you live that people would step into." /></Field>
-      <Field label="Phone"><input className="field" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Optional" /></Field>
+            <Field label="Phone"><div className="phone-field"><div className="phone-region-wrap"><button type="button" className="phone-region-trigger" aria-label="Select phone region" aria-haspopup="listbox" aria-expanded={phonePickerOpen} onClick={() => setPhonePickerOpen((open) => !open)}>{form.phoneRegion}<ChevronDown size={14} /></button>{phonePickerOpen && <div className="phone-region-menu" role="listbox">{phoneRegions.map(([code, country]) => <button key={code} type="button" role="option" aria-selected={form.phoneRegion === code} onClick={() => { setValue('phoneRegion', code); setPhonePickerOpen(false); }}><span>{country}</span></button>)}</div>}</div><input className="field" inputMode="tel" autoComplete="tel-national" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Mobile number" /></div></Field>
       <button type="submit" disabled={busy} className="send-button md:col-span-2">{busy ? <LoaderCircle className="animate-spin" size={18} /> : <Send size={17} />}Send application</button>
       <p className="form-fine md:col-span-2"> Your data stays with @seen, never sold and never shared.</p>
     </form>
