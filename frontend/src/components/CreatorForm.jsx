@@ -10,7 +10,6 @@ const defaults = {
   instagram: '',
   tiktok: '',
   audience: '20-100K',
-  why: '',
   email: '',
   phone: '',
   phoneRegion: '+971',
@@ -196,6 +195,7 @@ export default function CreatorForm({ onOpenLegal }) {
           </div>
         </div>
         <h3>You have been <span>seen</span><i aria-hidden="true">&#10003;</i></h3>
+        <p className="success-name">Hi {form.name.trim().split(/\s+/)[0] || 'Creator'},</p>
         <p>We&apos;ve received your application<br /><b>@seen</b></p>
         <div className="success-status-card">
           <div><h4>You&apos;re in the running</h4><p>We&apos;ll be in touch if you&apos;re selected for early access.</p></div>
@@ -219,7 +219,6 @@ export default function CreatorForm({ onOpenLegal }) {
       <Field label="TikTok"><input className="field" value={form.tiktok} onFocus={() => startSocialHandle('tiktok')} onChange={(event) => setSocialValue('tiktok', event.target.value)} placeholder="@yourhandle" /></Field>
       <Field label="Audience"><div className="audience-select"><select className="field" value={form.audience} onChange={(event) => setValue('audience', event.target.value)}>{audiences.map((audience) => <option key={audience}>{audience}</option>)}</select><ChevronDown size={17} aria-hidden="true" /></div></Field>
       <Field label="Email" error={errors.email}><input className="field" type="email" required value={form.email} onChange={(event) => setValue('email', event.target.value)} placeholder="you@example.com" /></Field>
-      <Field label="What is your page about?" error={errors.why} className="world-field"><textarea className="field min-h-28 resize-y" maxLength={300} value={form.why} onChange={(event) => setValue('why', event.target.value)} placeholder="The thing you live that people would step into." /></Field>
             <Field label="Phone" className="phone-app-field"><div className="phone-field"><div className="phone-region-wrap"><button type="button" className="phone-region-trigger" aria-label="Select phone region" aria-haspopup="listbox" aria-expanded={phonePickerOpen} onClick={() => setPhonePickerOpen((open) => !open)}>{form.phoneRegion}<ChevronDown size={14} /></button>{phonePickerOpen && <div className="phone-region-menu" role="listbox">{phoneRegions.map(([code, country]) => <button key={code} type="button" role="option" aria-selected={form.phoneRegion === code} onClick={() => { setValue('phoneRegion', code); setPhonePickerOpen(false); }}><span>{country}</span></button>)}</div>}</div><input className="field" inputMode="tel" autoComplete="tel-national" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Mobile number" /></div></Field>
       <div className="consent-field md:col-span-2">
         <label>

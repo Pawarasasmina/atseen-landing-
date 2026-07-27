@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowDown,
   ArrowRight,
+  BadgeCheck,
   Check,
   ClipboardCheck,
   Coins,
@@ -145,6 +146,24 @@ function useApplicationCount() {
   return count === null ? '...' : count.toLocaleString('en-US');
 }
 
+function CompactFoundingProfile() {
+  return (
+    <div className="founder-profile-stage">
+      <div className="founder-profile-beam" aria-hidden="true" />
+      <div className="founding-profile-wrap">
+        <div className="founding-profile">
+          <div className="profile-cover"><img src="/images/ethan-brooks-cover.png" alt="" /></div>
+          <div className="profile-avatar"><img src="/images/ethan-brooks-avatar.jpg" alt="Ethan Brooks" /></div>
+          <div className="profile-name">Ethan Brooks <BadgeCheck size={17} /> <EyeMark /></div>
+          <p>@ethan</p>
+          <div className="profile-state"><i />At the gym</div>
+          <div className="profile-stats"><b>664<span>Supporters</span></b><b>8.4K<span>Followers</span></b><b>212<span>Following</span></b></div>
+          <div className="founding-pill"><EyeMark /> Founding Creator</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 function SignalMarquee() {
   return (
     <div className="signal-marquee" aria-hidden="true">
@@ -216,6 +235,7 @@ export default function LandingPage() {
           <div className="hero-creator-count">
             <span className="hero-creator-icons" aria-hidden="true">
               {heroCreatorIcons.map((src, index) => <img src={src} alt="" key={src} style={{ zIndex: heroCreatorIcons.length - index }} />)}
+              <i className="hero-creator-more">+</i>
             </span>
             <small><b>{count}</b> creators have already applied</small>
           </div>
@@ -227,20 +247,24 @@ export default function LandingPage() {
             <div className="experience-panel"><div className="experience-path" aria-hidden="true"><span /><span /><span /></div>{steps.map(([number, title, text, Icon]) => <Reveal className="experience-step" key={title}><span className="experience-index">{number}</span><span className="experience-icon"><Icon size={21} /></span><div><h3>{title}</h3><p>{text}</p></div></Reveal>)}</div>
             <div className="metric-row">{proofPoints.map(([title, text, Icon]) => <div className="metric" key={title}><span className="metric-icon"><Icon size={16} /></span><b>{title}</b><span>{text}</span></div>)}</div>
             <div className="founding-promises">
-              <Reveal className="founding-promise"><span>01</span><h3>Free.</h3><p>Free to scroll, create — and get paid.</p></Reveal>
-              <Reveal className="founding-promise"><span>02</span><h3>No follower minimum.</h3><p>Worlds matter here. Numbers don&apos;t.</p></Reveal>
-              <Reveal className="founding-promise"><span>03</span><h3>You&apos;re in first.</h3><p>Founding registration opens by email invite — your place is saved.</p></Reveal>
+              <Reveal className="founding-promise"><span>01</span><h3>No follower minimum.</h3><p>Worlds matter here. Numbers don&apos;t.</p></Reveal>
+              <Reveal className="founding-promise"><span>02</span><h3>You&apos;re in first.</h3><p>Founding registration opens by email invite — your place is saved.</p></Reveal>
             </div>
           </div>
         </section>
 
         <CreatorBenefits />
 
-        <section className="founder-quote" aria-label="A note from the @seen founding team">
+        <section className="founder-quote founder-story" aria-label="A note from the @seen founding team">
           <div className="founder-quote-glow" aria-hidden="true" />
-          <div className="quote-signal" aria-hidden="true"><Eye size={21} /><i /><Sparkles size={14} /></div>
-          <blockquote>“Followers look. Fans invest.<br />We built the place where they can.”</blockquote>
-          <p>— the @seen founding team</p>
+          <div className="founder-story-inner">
+            <Reveal className="founder-story-copy">
+              <div className="quote-signal" aria-hidden="true"><Eye size={21} /><i /><Sparkles size={14} /></div>
+              <blockquote>&ldquo;Followers look. Fans invest.<br />We built the place where they can.&rdquo;</blockquote>
+              <p>&mdash; the @seen founding team</p>
+            </Reveal>
+            <Reveal className="founder-story-profile"><CompactFoundingProfile /></Reveal>
+          </div>
         </section>
 
         <section ref={applicationRef} id="apply" className="section-space join-section">
