@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, LoaderCircle, Send, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
@@ -81,6 +81,11 @@ export default function CreatorForm({ onOpenLegal }) {
   const [phonePickerOpen, setPhonePickerOpen] = useState(false);
   const [shareHint, setShareHint] = useState('Send this page to someone who deserves to be first.');
 
+  useEffect(() => {
+    document.body.classList.toggle('application-submitted', sent);
+    return () => document.body.classList.remove('application-submitted');
+  }, [sent]);
+
   const personalRef = useMemo(() => {
     const seed = normalizeHandle(form.instagram) || normalizeHandle(form.tiktok) || form.email.split('@')[0] || form.name.split(' ')[0] || 'creator';
     return seed.toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'creator';
@@ -92,6 +97,7 @@ export default function CreatorForm({ onOpenLegal }) {
   const setSocialValue = (key, value) => {
     const handle = value.replace(/\s/g, '').replace(/^@+/, '');
     setValue(key, handle ? `@${handle}` : '');
+    if (handle) setErrors((current) => ({ ...current, instagram: undefined }));
   };
 
   const startSocialHandle = (key) => {
@@ -124,14 +130,21 @@ export default function CreatorForm({ onOpenLegal }) {
     if (!normalizeHandle(form.instagram) && !normalizeHandle(form.tiktok)) next.instagram = 'Add Instagram or TikTok.';
     if (!consentGiven) next.consent = 'You must confirm your age and agreement before applying.';
     setErrors(next);
-    return Object.keys(next).length === 0;
+    return next;
   };
 
   const submit = async (event) => {
     event.preventDefault();
     if (form.website) return setSent(true);
-    if (!validate()) {
-      toast.error('Please add your email and at least one social handle.');
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      if (validationErrors.consent && Object.keys(validationErrors).length === 1) {
+        toast.error('Please confirm your age and agreement before applying.');
+      } else if (validationErrors.instagram) {
+        toast.error('Please add at least one Instagram or TikTok handle.');
+      } else {
+        toast.error('Please check the highlighted fields.');
+      }
       return;
     }
 
@@ -163,14 +176,33 @@ export default function CreatorForm({ onOpenLegal }) {
     }
   };
 
+  const dismissSuccess = () => {
+    setSent(false);
+    setForm(defaults);
+    setNiches(['Content']);
+    setConsentGiven(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (sent) {
     return (
       <div className="application-success">
-        <img className="success-eye-logo" src="/images/seen-eye.png" alt="@Seen eye" />
-        <h3>You&apos;re on the waitlist <span aria-hidden="true">&#10004;&#65039;</span></h3>
-        <p>We&apos;ve received your application.</p>
-        <button type="button" className="send-button" onClick={shareInvite}><Share2 size={17} />Share early access</button>
-        <small>{shareHint}</small>
+        <div className="success-visual" aria-hidden="true">
+          <span className="success-spark success-spark-one">&#10022;</span>
+          <span className="success-spark success-spark-two">&#10022;</span>
+          <div className="success-eye-wrap">
+            <img className="success-eye-logo" src="/images/seen-eye.png" alt="" />
+            <span className="success-check">&#10003;</span>
+          </div>
+        </div>
+        <h3>You have been <span>seen</span><i aria-hidden="true">&#10003;</i></h3>
+        <p>We&apos;ve received your application<br /><b>@seen</b></p>
+        <div className="success-status-card">
+          <div><h4>You&apos;re in the running</h4><p>We&apos;ll be in touch if you&apos;re selected for early access.</p></div>
+          <div className="success-stairway" aria-hidden="true"><img src="/images/seen-stairway.jpg" alt="" /></div>
+        </div>
+        <button type="button" className="send-button success-share" onClick={shareInvite}><Share2 size={19} />Share with friends</button>
+        <button type="button" className="success-later" onClick={dismissSuccess}>Maybe later</button>
       </div>
     );
   }
