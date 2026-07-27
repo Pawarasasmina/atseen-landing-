@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Check, ChevronDown, LoaderCircle, Send, Share2 } from 'lucide-react';
+import { ChevronDown, LoaderCircle, Send, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import { audiences, categories } from '../constants';
@@ -70,12 +70,13 @@ function Field({ label, error, children, className = '' }) {
   );
 }
 
-export default function CreatorForm() {
+export default function CreatorForm({ onOpenLegal }) {
   const [form, setForm] = useState(defaults);
   const [niches, setNiches] = useState(['Content']);
   const [errors, setErrors] = useState({});
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [phonePickerOpen, setPhonePickerOpen] = useState(false);
   const [shareHint, setShareHint] = useState('Send this page to someone who deserves to be first.');
@@ -103,9 +104,9 @@ export default function CreatorForm() {
 
   const shareInvite = async () => {
     const url = `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(inviteCode)}`;
-    const text = 'I just applied to be a founding creator on @seen. You should be there first too:';
+    const text = 'I joined the @Seen early-access waitlist. You can apply too:';
     try {
-      if (navigator.share) await navigator.share({ title: '@seen Founding Creators', text, url });
+      if (navigator.share) await navigator.share({ title: '@Seen Early Access', text, url });
       else {
         await navigator.clipboard.writeText(`${text} ${url}`);
         setShareHint('Personal invite link copied.');
@@ -121,6 +122,7 @@ export default function CreatorForm() {
     if (!form.email.trim()) next.email = 'Email is required.';
     else if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) next.email = 'Enter a valid email.';
     if (!normalizeHandle(form.instagram) && !normalizeHandle(form.tiktok)) next.instagram = 'Add Instagram or TikTok.';
+    if (!consentGiven) next.consent = 'You must confirm your age and agreement before applying.';
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -145,6 +147,7 @@ export default function CreatorForm() {
         niches,
         ref: tracking.ref,
         ts: new Date().toISOString(),
+        consentGiven,
         ...tracking.utm,
       });
       setReferralCode(data.referralCode || '');
@@ -163,10 +166,10 @@ export default function CreatorForm() {
   if (sent) {
     return (
       <div className="application-success">
-        <span className="success-eye" aria-hidden="true"><Check size={24} /></span>
-        <h3>You&apos;ve been seen.</h3>
-        <p>Your application is in and your place in line is saved. When founding registration opens, your invite lands here first.</p>
-        <button type="button" className="send-button" onClick={shareInvite}><Share2 size={17} />Invite a creator you rate</button>
+        <img className="success-eye-logo" src="/images/seen-eye.png" alt="@Seen eye" />
+        <h3>You&apos;re on the waitlist <span aria-hidden="true">&#10004;&#65039;</span></h3>
+        <p>We&apos;ve received your application.</p>
+        <button type="button" className="send-button" onClick={shareInvite}><Share2 size={17} />Share early access</button>
         <small>{shareHint}</small>
       </div>
     );
@@ -184,10 +187,17 @@ export default function CreatorForm() {
       <Field label="TikTok"><input className="field" value={form.tiktok} onFocus={() => startSocialHandle('tiktok')} onChange={(event) => setSocialValue('tiktok', event.target.value)} placeholder="@yourhandle" /></Field>
       <Field label="Audience"><div className="audience-select"><select className="field" value={form.audience} onChange={(event) => setValue('audience', event.target.value)}>{audiences.map((audience) => <option key={audience}>{audience}</option>)}</select><ChevronDown size={17} aria-hidden="true" /></div></Field>
       <Field label="Email" error={errors.email}><input className="field" type="email" required value={form.email} onChange={(event) => setValue('email', event.target.value)} placeholder="you@example.com" /></Field>
-      <Field label="What is your world about?" error={errors.why} className="world-field"><textarea className="field min-h-28 resize-y" maxLength={300} value={form.why} onChange={(event) => setValue('why', event.target.value)} placeholder="The thing you live that people would step into." /></Field>
+      <Field label="What is your page about?" error={errors.why} className="world-field"><textarea className="field min-h-28 resize-y" maxLength={300} value={form.why} onChange={(event) => setValue('why', event.target.value)} placeholder="The thing you live that people would step into." /></Field>
             <Field label="Phone" className="phone-app-field"><div className="phone-field"><div className="phone-region-wrap"><button type="button" className="phone-region-trigger" aria-label="Select phone region" aria-haspopup="listbox" aria-expanded={phonePickerOpen} onClick={() => setPhonePickerOpen((open) => !open)}>{form.phoneRegion}<ChevronDown size={14} /></button>{phonePickerOpen && <div className="phone-region-menu" role="listbox">{phoneRegions.map(([code, country]) => <button key={code} type="button" role="option" aria-selected={form.phoneRegion === code} onClick={() => { setValue('phoneRegion', code); setPhonePickerOpen(false); }}><span>{country}</span></button>)}</div>}</div><input className="field" inputMode="tel" autoComplete="tel-national" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Mobile number" /></div></Field>
+      <div className="consent-field md:col-span-2">
+        <label>
+          <input type="checkbox" checked={consentGiven} onChange={(event) => { setConsentGiven(event.target.checked); setErrors((current) => ({ ...current, consent: undefined })); }} required />
+          <span>I confirm that I am 18 or older and agree to the <button type="button" onClick={() => onOpenLegal?.('Early Access Terms')}>Early Access Terms</button> and <button type="button" onClick={() => onOpenLegal?.('Privacy Notice')}>Privacy Notice</button>.</span>
+        </label>
+        {errors.consent && <em role="alert">{errors.consent}</em>}
+      </div>
       <button type="submit" disabled={busy} className="send-button md:col-span-2">{busy ? <LoaderCircle className="animate-spin" size={18} /> : <Send size={17} />}Send application</button>
-      <p className="form-fine md:col-span-2"> Your data stays with @seen, never sold and never shared.</p>
+      <div className="form-fine md:col-span-2"><p>Your information is used to manage the @Seen early-access waitlist and send essential updates about your application.</p><p>Submitting an application does not guarantee acceptance or access.</p></div>
     </form>
   );
 }

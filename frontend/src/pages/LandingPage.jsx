@@ -3,12 +3,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowDown,
   ArrowRight,
-  BadgeCheck,
   Check,
   ClipboardCheck,
   Coins,
   Eye,
   Gem,
+  Gift,
   Globe2,
   Instagram,
   LockKeyhole,
@@ -26,14 +26,6 @@ import LegalModal from '../components/LegalModal';
 import Reveal from '../components/Reveal';
 import api from '../lib/api';
 
-const foundingPerks = [
-  { title: 'Founding terms', text: 'Special conditions locked from day one, before @seen opens to every creator.', icon: LockKeyhole, signal: '01' },
-  { title: 'The Founding badge', text: 'A visible seal beside your name that tells fans you were here before the doors opened.', icon: BadgeCheck, signal: '02' },
-  { title: 'Fans pay to reach you', text: 'Direct Access gives followers a private window where every reply is paid and guaranteed.', icon: Coins, signal: '03' },
-  { title: 'Your world, your prices', text: 'Premium experiences and private Worlds that your followers unlock on your terms.', icon: Globe2, signal: '04' },
-  { title: 'Shape the product', text: 'A direct line to the team while the founding circle decides what @seen becomes.', icon: SlidersHorizontal, signal: '05' },
-];
-
 const steps = [
   ['01', 'Apply', 'Two minutes: who you are, where you create, and the World people would step into.', ClipboardCheck],
   ['02', 'We invite you', 'If it is a fit, your personal founding registration invite lands in your inbox first.', Mail],
@@ -43,31 +35,19 @@ const steps = [
 const proofPoints = [
   ['Founding', 'badge and terms', Gem],
   ['Paid', 'Direct Access replies', Coins],
-  ['Private', 'Worlds and premium drops', LockKeyhole],
-  ['Manual', 'weekly review', ShieldCheck],
+  ['Limited ', 'Selected creators first', LockKeyhole],
+  ['Gifts', 'Fans support you with virtual gifts. Creator payouts will be available subject to eligibility and platform terms.', Gift],
 ];
 const heroCreatorIcons = Array.from({ length: 5 }, (_, index) => `/images/icon${index + 1}.jpeg`);
 
-const modes = {
-  worlds: {
-    label: 'Worlds',
-    title: 'Private spaces fans can step inside.',
-    text: 'Creators turn lived experience, routines, voice notes and premium drops into a place followers can unlock.',
-    icon: Globe2,
-  },
-  access: {
-    label: 'Direct Access',
-    title: 'Attention finally has a price.',
-    text: 'Fans ask something real. Creators answer inside a guaranteed private window, with value clear on both sides.',
-    icon: MessageCircle,
-  },
-  status: {
-    label: 'Founding status',
-    title: 'It shows on your profile.',
-    text: 'The Founding Creator seal becomes part of your identity on @seen from the first public day.',
-    icon: BadgeCheck,
-  },
-};
+const creatorBenefits = [
+  ['Earn', 'Create content and get paid', Coins],
+  ['Global Reach', 'Get recommended worldwide', Globe2],
+  ['No Minimum', 'Grow without a large following', Rocket],
+  ['Direct Access', 'Connect with your audience and earn from your value', MessageCircle],
+  ['Seen First', 'Early creators get priority visibility on our platform', Eye],
+  ['Free Promotion', 'Selected creators get featured by @Seen', Sparkles],
+];
 
 function AmbientBackground() {
   return (
@@ -112,7 +92,6 @@ function Nav() {
       <nav className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5">
         <a href="#top" aria-label="@seen home"><Brand /></a>
         <div className="hidden items-center gap-7 md:flex">
-          <a className="nav-link" href="#founding">Founding</a>
           <a className="nav-link" href="#status">Status</a>
           <a className="nav-link" href="#experience">How it works</a>
           <a className="nav-link" href="#apply">Apply</a>
@@ -166,23 +145,6 @@ function useApplicationCount() {
   return count === null ? '...' : count.toLocaleString('en-US');
 }
 
-function FoundingProfileMock() {
-  return (
-    <div className="founding-profile-wrap">
-      <div className="profile-callout"><span />the Founding seal</div>
-      <div className="founding-profile">
-        <div className="profile-cover"><img src="/images/ethan-brooks-cover.png" alt="" /></div>
-        <div className="profile-avatar"><img src="/images/ethan-brooks-avatar.jpg" alt="Ethan Brooks" /></div>
-        <div className="profile-name">Ethan Brooks <BadgeCheck size={17} /> <EyeMark /></div>
-        <p>@ethan</p>
-        <div className="profile-state"><i />At the gym</div>
-        <div className="profile-stats"><b>664<span>Supporters</span></b><b>8.4K<span>Followers</span></b><b>212<span>Following</span></b></div>
-        <div className="founding-pill"><EyeMark /> Founding Creator</div>
-      </div>
-    </div>
-  );
-}
-
 function SignalMarquee() {
   return (
     <div className="signal-marquee" aria-hidden="true">
@@ -191,31 +153,24 @@ function SignalMarquee() {
   );
 }
 
-function ProductShowcase() {
-  const [mode, setMode] = useState('worlds');
-  const active = modes[mode];
-  const ActiveIcon = active.icon;
-
+function CreatorBenefits() {
   return (
-    <section className="showcase-section" id="status">
+    <section className="creator-benefits-section" id="status">
       <SignalMarquee />
-      <div className="mx-auto max-w-7xl px-5 py-24 md:py-28">
-        <Reveal className="grid items-end gap-8 lg:grid-cols-[1fr_.72fr]">
-          <div><p className="section-label">Inside the product</p><h2 className="section-title max-w-4xl">The prototype, made sharper<br /><span>for the first creators.</span></h2></div>
-          <p className="section-intro">We kept the moving signal language the client liked, then rebuilt the story around founding access, badge status and creator value.</p>
+      <div className="creator-benefits-inner">
+        <Reveal className="creator-benefits-heading">
+          <p className="section-label">Built for creators</p>
+          <h2>A new place to <span>grow, get discovered, and earn.</span></h2>
+          <p>Built for creators who want more than followers.</p>
         </Reveal>
-        <div className="showcase-shell founding-showcase">
-          <div className="showcase-tabs" role="tablist" aria-label="@seen founding features">
-            {Object.entries(modes).map(([key, item]) => <button key={key} type="button" role="tab" aria-selected={mode === key} className={mode === key ? 'active' : ''} onClick={() => setMode(key)}><item.icon size={17} /><span>{item.label}</span><i /></button>)}
-          </div>
-          <div className="showcase-content">
-            <AnimatePresence mode="wait">
-              <motion.div key={mode} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: .28 }} className="showcase-copy">
-                <span className="showcase-icon"><ActiveIcon size={23} /></span><small>{active.label}</small><h3>{active.title}</h3><p>{active.text}</p><div><b>Founding circle</b><a href="#apply">Request invite <ArrowRight size={14} /></a></div>
-              </motion.div>
-            </AnimatePresence>
-            <div className="showcase-demo founding-demo"><div className="demo-glow" /><FoundingProfileMock /></div>
-          </div>
+        <div className="creator-benefits-grid">
+          {creatorBenefits.map(([title, text, Icon], index) => (
+            <Reveal className="creator-benefit-card" key={title} style={{ transitionDelay: `${index * 55}ms` }}>
+              <span className="creator-benefit-icon"><Icon size={19} /></span>
+              <div><h3>{title}</h3><p>{text}</p></div>
+              <small>{String(index + 1).padStart(2, '0')}</small>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
@@ -256,7 +211,7 @@ export default function LandingPage() {
             <div className="founding-tag"><span />Founding creators· early access</div>
             <h1>Be seen <span>first.</span></h1>
             <p>@seen opens with a <b>limited founding circle</b> of creators. A new social platform where fans step into your real world and pay to get closer.</p>
-            <div className="hero-actions"><a ref={heroApplyRef} href="#apply" className="glow-button"><span>Apply now <ArrowRight size={17} /></span></a><a href="#founding" className="outline-button">See what you get <ArrowDown size={16} /></a></div>
+            <div className="hero-actions"><a ref={heroApplyRef} href="#apply" className="glow-button"><span>Apply now <ArrowRight size={17} /></span></a><a href="#experience" className="outline-button">How it works <ArrowDown size={16} /></a></div>
           </motion.div>
           <div className="hero-creator-count">
             <span className="hero-creator-icons" aria-hidden="true">
@@ -266,17 +221,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="founding" className="section-space relative border-y border-white/[.06]">
-          <div className="section-glow section-glow-left" />
-          <div className="mx-auto max-w-6xl px-5">
-            <Reveal className="grid items-end gap-8 lg:grid-cols-[1fr_.75fr]"><div><p className="section-label">Why founding</p><h2 className="section-title max-w-4xl">What founding creators<br /><span>get first.</span></h2></div><p className="section-intro">@seen will open to every creator. The founding circle gets in earlier, with conditions locked from day one.</p></Reveal>
-            <div className="perk-list">{foundingPerks.map(({ title, text, icon: Icon, signal }, index) => <Reveal className="perk-row" key={title} style={{ transitionDelay: `${index * 70}ms` }}><span className="perk-icon"><Icon size={19} /></span><p><small>{signal} / founding signal</small><b>{title}</b><em>{text}</em></p><i className="perk-orbit" aria-hidden="true" /></Reveal>)}</div>
-          </div>
-        </section>
-
         <section id="experience" className="section-space relative">
           <div className="mx-auto max-w-7xl px-5">
-            <Reveal className="mb-14 text-center"><p className="section-label justify-center">How it works</p><h2 className="section-title mx-auto max-w-4xl">Three steps.<br /><span>Then the doors open.</span></h2></Reveal>
+            <Reveal className="mb-14 text-center"><p className="section-label justify-center">We invite you </p><h2 className="section-title mx-auto max-w-4xl">Free to create <br /><span>and get  paid.</span></h2></Reveal>
             <div className="experience-panel"><div className="experience-path" aria-hidden="true"><span /><span /><span /></div>{steps.map(([number, title, text, Icon]) => <Reveal className="experience-step" key={title}><span className="experience-index">{number}</span><span className="experience-icon"><Icon size={21} /></span><div><h3>{title}</h3><p>{text}</p></div></Reveal>)}</div>
             <div className="metric-row">{proofPoints.map(([title, text, Icon]) => <div className="metric" key={title}><span className="metric-icon"><Icon size={16} /></span><b>{title}</b><span>{text}</span></div>)}</div>
             <div className="founding-promises">
@@ -287,7 +234,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <ProductShowcase />
+        <CreatorBenefits />
 
         <section className="founder-quote" aria-label="A note from the @seen founding team">
           <div className="founder-quote-glow" aria-hidden="true" />
@@ -299,8 +246,8 @@ export default function LandingPage() {
         <section ref={applicationRef} id="apply" className="section-space join-section">
           <div className="mx-auto max-w-6xl px-5">
             <div className="join-shell application-shell"><div className="join-light" />
-              <Reveal className="join-copy"><div className="eyebrow"><span /> The application</div><h2>Request your invite.</h2><p>We read every application ourselves. Follower count matters less than a World worth stepping into.</p><div className="join-points"><span><Check size={14} /> Confirmation, not approval</span><span><Mail size={14} /> Invite lands here first</span><span><ShieldCheck size={14} /> No Telegram bots</span></div><div className="join-signal" aria-hidden="true"><span><i /> Founding signal</span><b>Ready in 02:00</b></div><div className="join-preview"><div className="join-preview-head"><span>Founding path</span><b><i /> Live</b></div><div className="join-preview-steps"><span><b>01</b> Apply</span><span><b>02</b> Review</span><span><b>03</b> Invite</span></div><p>Every application gets a personal review.</p></div><div className="join-signoff"><Eye size={23} strokeWidth={1.5} /><div><b>@seen</b><span>We’ll meet there soon.</span></div></div></Reveal>
-              <Reveal className="join-form"><CreatorForm /></Reveal>
+              <Reveal className="join-copy"><div className="eyebrow"><span /> The application</div><h2>Join the early-access waitlist.</h2><p>We read every application ourselves. Follower count matters less than a World worth stepping into.</p><div className="join-points"><span><Check size={14} /> Confirmation, not approval</span><span><Mail size={14} /> Essential waitlist updates</span></div><div className="join-signal" aria-hidden="true"><span><i /> Founding signal</span><b>Ready in 02:00</b></div><div className="join-preview"><div className="join-preview-head"><span>Founding path</span><b><i /> Live</b></div><div className="join-preview-steps"><span><b>01</b> Apply</span><span><b>02</b> Review</span><span><b>03</b> Updates</span></div><p>Every application gets a personal review.</p></div><div className="join-signoff"><Eye size={23} strokeWidth={1.5} /><div><b>@seen</b><span>We’ll meet there soon.</span></div></div></Reveal>
+              <Reveal className="join-form"><CreatorForm onOpenLegal={setLegal} /></Reveal>
             </div>
           </div>
         </section>
@@ -326,7 +273,7 @@ export default function LandingPage() {
           </div>
           <div className="footer-emails"><a href="mailto:creators@atseen.com">creators@atseen.com</a><span>·</span><a href="mailto:hello@atseen.com">hello@atseen.com</a></div>
           <p>@seen · We see you. Every day.</p>
-          <div className="footer-legal"><button onClick={() => setLegal('Privacy')}>Privacy</button><span>·</span><button onClick={() => setLegal('Terms')}>Terms</button></div>
+          <div className="footer-legal"><button onClick={() => setLegal('Privacy Notice')}>Privacy Notice</button><span>·</span><button onClick={() => setLegal('Early Access Terms')}>Early Access Terms</button><span>·</span><a href="mailto:privacy@atseen.com">Contact</a></div>
         </div>
       </footer>
       <LegalModal type={legal} onClose={() => setLegal(null)} />

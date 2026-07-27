@@ -19,6 +19,7 @@ const applyValidation = [
   body('phone').optional({ checkFalsy: true }).trim().isLength({ max: 40 }),
   body('ref').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
   body('ts').optional({ checkFalsy: true }).isISO8601(),
+  body('consentGiven').custom((value) => value === true).withMessage('You must confirm that you are 18 or older and agree to the Early Access Terms and Privacy Notice.'),
   body('utm_source').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
   body('utm_medium').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
   body('utm_campaign').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
@@ -45,7 +46,7 @@ router.post('/leads', [
   body('socialProfileUrl').optional({ checkFalsy: true }).trim().isLength({ max: 500 }),
   body('audienceSize').optional({ checkFalsy: true }).isIn(AUDIENCE_SIZES),
   body('creatorDescription').optional({ checkFalsy: true }).trim().isLength({ max: 1000 }),
-  body('consentGiven').optional().isBoolean(),
+  body('consentGiven').custom((value) => value === true).withMessage('Consent is required.'),
   body('website').optional().isString().isLength({ max: 200 })
 ], validate, createLead);
 export default router;
