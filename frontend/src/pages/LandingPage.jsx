@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowDown,
@@ -224,7 +224,25 @@ function ProductShowcase() {
 
 export default function LandingPage() {
   const [legal, setLegal] = useState(null);
+  const [showFloatingApply, setShowFloatingApply] = useState(false);
+  const heroApplyRef = useRef(null);
+  const applicationRef = useRef(null);
   const count = useApplicationCount();
+
+  useEffect(() => {
+    const visibility = { hero: true, application: false };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.target === heroApplyRef.current) visibility.hero = entry.isIntersecting;
+        if (entry.target === applicationRef.current) visibility.application = entry.isIntersecting;
+      });
+      setShowFloatingApply(!visibility.hero && !visibility.application);
+    }, { threshold: .12 });
+
+    if (heroApplyRef.current) observer.observe(heroApplyRef.current);
+    if (applicationRef.current) observer.observe(applicationRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div id="top" className="site-shell overflow-hidden bg-ink text-white">
@@ -238,14 +256,14 @@ export default function LandingPage() {
             <div className="founding-tag"><span />Founding creators· early access</div>
             <h1>Be seen <span>first.</span></h1>
             <p>@seen opens with a <b>limited founding circle</b> of creators. A new social platform where fans step into your real world and pay to get closer.</p>
-            <div className="hero-actions"><a href="#apply" className="glow-button"><span>Apply now <ArrowRight size={17} /></span></a><a href="#founding" className="outline-button">See what you get <ArrowDown size={16} /></a></div>
-            <div className="hero-creator-count">
-              <span className="hero-creator-icons" aria-hidden="true">
-                {heroCreatorIcons.map((src, index) => <img src={src} alt="" key={src} style={{ zIndex: heroCreatorIcons.length - index }} />)}
-              </span>
-              <small><b>{count}</b> creators have already applied</small>
-            </div>
+            <div className="hero-actions"><a ref={heroApplyRef} href="#apply" className="glow-button"><span>Apply now <ArrowRight size={17} /></span></a><a href="#founding" className="outline-button">See what you get <ArrowDown size={16} /></a></div>
           </motion.div>
+          <div className="hero-creator-count">
+            <span className="hero-creator-icons" aria-hidden="true">
+              {heroCreatorIcons.map((src, index) => <img src={src} alt="" key={src} style={{ zIndex: heroCreatorIcons.length - index }} />)}
+            </span>
+            <small><b>{count}</b> creators have already applied</small>
+          </div>
         </section>
 
         <section id="founding" className="section-space relative border-y border-white/[.06]">
@@ -261,6 +279,11 @@ export default function LandingPage() {
             <Reveal className="mb-14 text-center"><p className="section-label justify-center">How it works</p><h2 className="section-title mx-auto max-w-4xl">Three steps.<br /><span>Then the doors open.</span></h2></Reveal>
             <div className="experience-panel"><div className="experience-path" aria-hidden="true"><span /><span /><span /></div>{steps.map(([number, title, text, Icon]) => <Reveal className="experience-step" key={title}><span className="experience-index">{number}</span><span className="experience-icon"><Icon size={21} /></span><div><h3>{title}</h3><p>{text}</p></div></Reveal>)}</div>
             <div className="metric-row">{proofPoints.map(([title, text, Icon]) => <div className="metric" key={title}><span className="metric-icon"><Icon size={16} /></span><b>{title}</b><span>{text}</span></div>)}</div>
+            <div className="founding-promises">
+              <Reveal className="founding-promise"><span>01</span><h3>Free.</h3><p>Free to scroll, create — and get paid.</p></Reveal>
+              <Reveal className="founding-promise"><span>02</span><h3>No follower minimum.</h3><p>Worlds matter here. Numbers don&apos;t.</p></Reveal>
+              <Reveal className="founding-promise"><span>03</span><h3>You&apos;re in first.</h3><p>Founding registration opens by email invite — your place is saved.</p></Reveal>
+            </div>
           </div>
         </section>
 
@@ -273,7 +296,7 @@ export default function LandingPage() {
           <p>— the @seen founding team</p>
         </section>
 
-        <section id="apply" className="section-space join-section">
+        <section ref={applicationRef} id="apply" className="section-space join-section">
           <div className="mx-auto max-w-6xl px-5">
             <div className="join-shell application-shell"><div className="join-light" />
               <Reveal className="join-copy"><div className="eyebrow"><span /> The application</div><h2>Request your invite.</h2><p>We read every application ourselves. Follower count matters less than a World worth stepping into.</p><div className="join-points"><span><Check size={14} /> Confirmation, not approval</span><span><Mail size={14} /> Invite lands here first</span><span><ShieldCheck size={14} /> No Telegram bots</span></div><div className="join-signal" aria-hidden="true"><span><i /> Founding signal</span><b>Ready in 02:00</b></div><div className="join-preview"><div className="join-preview-head"><span>Founding path</span><b><i /> Live</b></div><div className="join-preview-steps"><span><b>01</b> Apply</span><span><b>02</b> Review</span><span><b>03</b> Invite</span></div><p>Every application gets a personal review.</p></div><div className="join-signoff"><Eye size={23} strokeWidth={1.5} /><div><b>@seen</b><span>We’ll meet there soon.</span></div></div></Reveal>
@@ -283,6 +306,16 @@ export default function LandingPage() {
         </section>
 
       </main>
+      <AnimatePresence>
+        {showFloatingApply && <motion.a
+          href="#apply"
+          className="floating-apply-cta"
+          initial={{ opacity: 0, y: 18, x: '-50%' }}
+          animate={{ opacity: 1, y: 0, x: '-50%' }}
+          exit={{ opacity: 0, y: 18, x: '-50%' }}
+          transition={{ duration: .22 }}
+        >Apply now <Sparkles size={14} /></motion.a>}
+      </AnimatePresence>
       <footer className="site-footer">
         <div className="footer-stars" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
         <div className="site-footer-inner">
