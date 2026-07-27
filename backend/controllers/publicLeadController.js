@@ -80,6 +80,13 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char]));
 }
 
+function publicBaseUrl(req) {
+  return (process.env.CLIENT_URL?.split(',')[0] || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+}
+
+function emailLogo() {
+  return `<span style="font-family:Arial,Helvetica,sans-serif;font-size:25px;line-height:1;font-weight:700;letter-spacing:-1px;color:#F7FAFF;-webkit-text-fill-color:#F7FAFF;"><span style="color:#9CCBFF;-webkit-text-fill-color:#9CCBFF;">@</span>seen</span>`;
+}
 async function sendEmail({ to, subject, html }) {
   if (!process.env.RESEND_API_KEY) return;
   const response = await fetch(resendEndpoint, {
@@ -90,21 +97,41 @@ async function sendEmail({ to, subject, html }) {
   if (!response.ok) throw new Error(`Resend email failed with ${response.status}`);
 }
 
-function notificationEmail(payload) {
-  const rows = fieldRows(payload).map(([label, value]) => `<tr><td style="padding:8px 12px;color:#9AA7B8">${escapeHtml(label)}</td><td style="padding:8px 12px;color:#F0F4FA">${escapeHtml(value)}</td></tr>`).join('');
-  return `<div style="background:#06080B;color:#F0F4FA;font-family:Inter,Arial,sans-serif;padding:28px"><h1 style="margin:0 0 16px">New @seen application</h1><table style="border-collapse:collapse;width:100%;max-width:680px;background:#10141C;border:1px solid rgba(156,203,255,.18)">${rows}</table></div>`;
+function notificationEmail(payload, req) {
+  const baseUrl = publicBaseUrl(req);
+  const rows = fieldRows(payload).map(([label, value]) => `<tr><td style="padding:11px 14px;border-bottom:1px solid #222B38;color:#8E9BAD;font-size:13px;vertical-align:top;">${escapeHtml(label)}</td><td style="padding:11px 14px;border-bottom:1px solid #222B38;color:#F0F4FA;font-size:14px;line-height:1.5;vertical-align:top;">${escapeHtml(value)}</td></tr>`).join('');
+  return `<!doctype html><html><body style="margin:0;padding:0;background:#06080B;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#06080B;"><tr><td align="center" style="padding:32px 16px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:680px;"><tr><td style="padding:0 4px 22px;">${emailLogo(baseUrl)}</td></tr><tr><td style="border:1px solid #263345;border-radius:22px;background:#0F151E;padding:28px;"><div style="color:#9CCBFF;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">New creator application</div><h1 style="margin:10px 0 22px;color:#F7FAFF;font-family:Arial,Helvetica,sans-serif;font-size:28px;line-height:1.2;">${escapeHtml(payload.fullName)}</h1><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="overflow:hidden;border:1px solid #222B38;border-radius:14px;border-collapse:separate;border-spacing:0;font-family:Arial,Helvetica,sans-serif;">${rows}</table></td></tr></table></td></tr></table></body></html>`;
 }
 
 function confirmationEmail(payload, req) {
-  const baseUrl = process.env.CLIENT_URL?.split(',')[0] || `${req.protocol}://${req.get('host')}`;
-  const inviteUrl = `${baseUrl.replace(/\/$/, '')}/?ref=${encodeURIComponent(payload.referralCode)}`;
-  return `<div style="margin:0;background:#06080B;color:#F0F4FA;font-family:Inter,Arial,sans-serif;padding:34px"><div style="max-width:620px;margin:auto;border:1px solid rgba(156,203,255,.18);border-radius:24px;background:#10141C;padding:30px"><div style="color:#9CCBFF;font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase">@seen founding circle</div><h1 style="font-size:34px;line-height:1.05;margin:18px 0 14px">You've been seen âœ¦</h1><p style="color:#B8C4D3;line-height:1.7">Thanks for applying to the founding circle of @seen. Your place in line is saved. When founding registration opens, your invite lands here first.</p><a href="${escapeHtml(inviteUrl)}" style="display:inline-block;margin-top:18px;border-radius:999px;background:#9CCBFF;color:#06080B;padding:14px 22px;text-decoration:none;font-weight:800">Invite a creator you rate</a><p style="margin-top:24px;color:#6F7A8B;font-size:13px"><a href="https://instagram.com/_atseen" style="color:#9CCBFF">Instagram</a> Â· <a href="https://t.me/atseen" style="color:#9CCBFF">Telegram</a></p></div></div>`;
+  const baseUrl = publicBaseUrl(req);
+  const inviteUrl = `${baseUrl}/?ref=${encodeURIComponent(payload.referralCode)}`;
+  const eyeUrl = `${baseUrl}/images/seen-eye.png`;
+  const firstName = escapeHtml(payload.fullName?.split(/\s+/)[0] || 'Creator');
+  return `<!doctype html>
+  <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark only"><meta name="supported-color-schemes" content="dark only"><style>:root{color-scheme:dark only;supported-color-schemes:dark only}.seen-bg{background-color:#05080C!important;background-image:linear-gradient(#05080C,#05080C)!important}.seen-card{background-color:#0E151F!important;background-image:linear-gradient(#0E151F,#0E151F)!important}.seen-panel{background-color:#0A1018!important;background-image:linear-gradient(#0A1018,#0A1018)!important}.seen-button{background-color:#B9DCFF!important;background-image:linear-gradient(#B9DCFF,#B9DCFF)!important;color:#07101A!important;-webkit-text-fill-color:#07101A!important}@media(max-width:480px){.seen-wrap{padding:24px 12px!important}.seen-content{padding-left:24px!important;padding-right:24px!important}.seen-title{font-size:34px!important}}@media(prefers-color-scheme:dark){.seen-bg{background-color:#05080C!important;background-image:linear-gradient(#05080C,#05080C)!important}.seen-card{background-color:#0E151F!important;background-image:linear-gradient(#0E151F,#0E151F)!important}.seen-panel{background-color:#0A1018!important;background-image:linear-gradient(#0A1018,#0A1018)!important}.seen-button{background-color:#B9DCFF!important;background-image:linear-gradient(#B9DCFF,#B9DCFF)!important;color:#07101A!important;-webkit-text-fill-color:#07101A!important}}[data-ogsc] .seen-bg{background-color:#05080C!important;background-image:linear-gradient(#05080C,#05080C)!important}[data-ogsc] .seen-card{background-color:#0E151F!important;background-image:linear-gradient(#0E151F,#0E151F)!important}[data-ogsc] .seen-panel{background-color:#0A1018!important;background-image:linear-gradient(#0A1018,#0A1018)!important}[data-ogsc] .seen-button{background-color:#B9DCFF!important;background-image:linear-gradient(#B9DCFF,#B9DCFF)!important;color:#07101A!important;-webkit-text-fill-color:#07101A!important}</style></head>
+  <body class="seen-bg" bgcolor="#05080C" style="margin:0;padding:0;background-color:#05080C;background-image:linear-gradient(#05080C,#05080C);">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your @seen founding circle application is confirmed.</div>
+    <table role="presentation" class="seen-bg" bgcolor="#05080C" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#05080C;background-image:linear-gradient(#05080C,#05080C);"><tr><td class="seen-wrap" align="center" style="padding:36px 16px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:620px;">
+        <tr><td style="padding:0 6px 24px;">${emailLogo(baseUrl)}</td><td align="right" style="padding:0 6px 24px;color:#728196;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;-webkit-text-fill-color:#728196;">Founding circle</td></tr>
+        <tr><td class="seen-card" bgcolor="#0E151F" colspan="2" style="overflow:hidden;border:1px solid #29384B;border-radius:24px;background-color:#0E151F;background-image:linear-gradient(#0E151F,#0E151F);"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+          <tr><td style="height:5px;background:#9CCBFF;font-size:0;line-height:0;">&nbsp;</td></tr>
+          <tr><td class="seen-content" style="padding:42px 38px 16px;"><div style="display:inline-block;border:1px solid #34516F;border-radius:999px;background:#142538;padding:7px 12px;color:#B9DCFF;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;">Application received</div><h1 class="seen-title" style="margin:22px 0 14px;color:#F7FAFF;font-family:Arial,Helvetica,sans-serif;font-size:38px;line-height:1.08;letter-spacing:-1.2px;-webkit-text-fill-color:#F7FAFF;">You've been seen <img src="${escapeHtml(eyeUrl)}" width="32" height="20" alt="" style="display:inline-block;width:32px;height:20px;border:0;vertical-align:middle;"></h1><p style="margin:0;color:#D7E0EC;font-family:Arial,Helvetica,sans-serif;font-size:17px;line-height:1.6;-webkit-text-fill-color:#D7E0EC;">Hey ${firstName}, your place in the <strong style="color:#FFFFFF;-webkit-text-fill-color:#FFFFFF;">@seen founding circle</strong> is saved.</p></td></tr>
+          <tr><td style="padding:14px 38px 8px;"><table role="presentation" class="seen-panel" bgcolor="#0A1018" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #243345;border-radius:16px;background-color:#0A1018;background-image:linear-gradient(#0A1018,#0A1018);"><tr><td width="44" style="padding:18px 0 18px 18px;color:#9CCBFF;font-family:Arial,Helvetica,sans-serif;font-size:24px;vertical-align:top;">&#10003;</td><td style="padding:18px;color:#AAB8C9;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.65;-webkit-text-fill-color:#AAB8C9;">When founding registration opens, your private invitation will land in this inbox first. No further action is needed.</td></tr></table></td></tr>
+          <tr><td align="center" style="padding:25px 38px 12px;"><a class="seen-button" href="${escapeHtml(inviteUrl)}" style="display:inline-block;border-radius:999px;background-color:#B9DCFF;background-image:linear-gradient(#B9DCFF,#B9DCFF);padding:15px 25px;color:#07101A;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:800;text-decoration:none;-webkit-text-fill-color:#07101A;">Invite a creator you rate &nbsp;&#8594;</a></td></tr>
+          <tr><td align="center" style="padding:0 38px 36px;color:#738196;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;">Know someone whose work deserves to be seen?<br>Share your personal invite link with them.</td></tr>
+        </table></td></tr>
+        <tr><td colspan="2" align="center" style="padding:24px 10px 8px;color:#6F7E91;font-family:Arial,Helvetica,sans-serif;font-size:12px;"><a href="https://instagram.com/_atseen" style="color:#9CCBFF;text-decoration:none;">Instagram</a><span style="padding:0 9px;color:#3E4A59;">&bull;</span><a href="https://t.me/atseen" style="color:#9CCBFF;text-decoration:none;">Telegram</a></td></tr>
+        <tr><td colspan="2" align="center" style="padding:4px 10px;color:#445163;font-family:Arial,Helvetica,sans-serif;font-size:10px;line-height:1.5;">You received this because you applied to the @seen founding circle.</td></tr>
+      </table>
+    </td></tr></table>
+  </body></html>`;
 }
-
 async function notifyApplication(payload, req) {
   await Promise.allSettled([
-    sendEmail({ to: process.env.CREATORS_NOTIFY_EMAIL || 'creators@atseen.com', subject: `New @seen creator application: ${payload.fullName}`, html: notificationEmail(payload) }),
-    sendEmail({ to: payload.email, subject: "You've been seen âœ¦", html: confirmationEmail(payload, req) }),
+    sendEmail({ to: process.env.CREATORS_NOTIFY_EMAIL || 'creators@atseen.com', subject: `New @seen creator application: ${payload.fullName}`, html: notificationEmail(payload, req) }),
+    sendEmail({ to: payload.email, subject: "You've been seen - welcome to the @seen founding circle", html: confirmationEmail(payload, req) }),
   ]);
 }
 
