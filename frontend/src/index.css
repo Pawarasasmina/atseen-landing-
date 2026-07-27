@@ -546,7 +546,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .metric-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; overflow: hidden; margin-top: 1px; border: 1px solid rgba(255,255,255,.07); border-radius: 20px; background: rgba(255,255,255,.07); }
 .metric { padding: 24px; background: rgba(8,11,15,.94); }
 .metric b { display: block; color: #cfe5ff; font-size: 1.15rem; }
-.metric span { display: block; margin-top: 5px; color: rgba(255,255,255,.3); font-size: .72rem; }
+.metric > span:not(.metric-icon) { display: block; margin-top: 5px; color: rgba(255,255,255,.3); font-size: .72rem; }
 
 .showcase-section {
   position: relative;
@@ -932,8 +932,11 @@ select.field { color-scheme: dark; }
 .founding-hero h1 span { color: transparent; background: linear-gradient(180deg, #fff, #9ccbff); background-clip: text; -webkit-background-clip: text; }
 .founding-hero p { max-width: 500px; margin: 18px auto 0; color: rgba(255,255,255,.58); font-size: 1.03rem; line-height: 1.72; }
 .founding-hero p b { color: #fff; }
-.founding-hero small { display: block; margin-top: 16px; color: rgba(255,255,255,.35); font-size: .78rem; }
+.founding-hero small { display: block; color: rgba(255,255,255,.35); font-size: .78rem; }
 .founding-hero small b { color: #bfe3ff; }
+.hero-creator-count { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; }
+.hero-creator-icons { display: flex; align-items: center; padding-left: 8px; }
+.hero-creator-icons img { position: relative; width: 30px; height: 30px; margin-left: -8px; border: 2px solid #080c12; border-radius: 50%; background: #111a25; object-fit: cover; box-shadow: 0 0 0 1px rgba(156,203,255,.18), 0 5px 14px rgba(0,0,0,.3); }
 .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; margin-top: 30px; }
 .hero-profile { position: relative; z-index: 2; display: none; }
 
@@ -1133,7 +1136,8 @@ select.field { color-scheme: dark; }
 
 .metric { position: relative; overflow: hidden; min-height: 116px; padding: 22px 20px 20px 62px; transition: background .25s ease; }
 .metric:hover { background: rgba(20,35,53,.96); }
-.metric-icon { position: absolute; top: 23px; left: 20px; display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid rgba(156,203,255,.25); border-radius: 9px; color: #9ccbff; background: rgba(156,203,255,.07); }
+.metric-icon { position: absolute; top: 23px; left: 20px; display: grid; width: 29px; height: 29px; margin: 0; place-items: center; border: 1px solid rgba(156,203,255,.25); border-radius: 9px; color: #9ccbff; background: rgba(156,203,255,.07); line-height: 0; }
+.metric-icon svg { display: block; width: 16px; height: 16px; margin: auto; }
 .metric b { font-size: 1.04rem; }
 
 .quote-signal { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: 11px; margin-bottom: 1rem; color: #9ccbff; }

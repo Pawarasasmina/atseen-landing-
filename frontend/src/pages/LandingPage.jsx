@@ -46,6 +46,7 @@ const proofPoints = [
   ['Private', 'Worlds and premium drops', LockKeyhole],
   ['Manual', 'weekly review', ShieldCheck],
 ];
+const heroCreatorIcons = Array.from({ length: 5 }, (_, index) => `/images/icon${index + 1}.jpeg`);
 
 const modes = {
   worlds: {
@@ -171,7 +172,7 @@ function FoundingProfileMock() {
       <div className="profile-callout"><span />the Founding seal</div>
       <div className="founding-profile">
         <div className="profile-cover"><img src="/images/ethan-brooks-cover.png" alt="" /></div>
-        <div className="profile-avatar"><img src="/images/ethan-brooks-avatar.png" alt="Ethan Brooks" /></div>
+        <div className="profile-avatar"><img src="/images/ethan-brooks-avatar.jpg" alt="Ethan Brooks" /></div>
         <div className="profile-name">Ethan Brooks <BadgeCheck size={17} /> <EyeMark /></div>
         <p>@ethan</p>
         <div className="profile-state"><i />At the gym</div>
@@ -234,11 +235,16 @@ export default function LandingPage() {
         <section className="founding-hero">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .75 }} className="founding-hero-inner">
             <EyeMark className="hero-eye" />
-            <div className="founding-tag"><span />Founding creators Â· early access</div>
+            <div className="founding-tag"><span />Founding creators· early access</div>
             <h1>Be seen <span>first.</span></h1>
             <p>@seen opens with a <b>limited founding circle</b> of creators. A new social platform where fans step into your real world and pay to get closer.</p>
             <div className="hero-actions"><a href="#apply" className="glow-button"><span>Apply now <ArrowRight size={17} /></span></a><a href="#founding" className="outline-button">See what you get <ArrowDown size={16} /></a></div>
-            <small><b>{count}</b>  creators have already applied </small>
+            <div className="hero-creator-count">
+              <span className="hero-creator-icons" aria-hidden="true">
+                {heroCreatorIcons.map((src, index) => <img src={src} alt="" key={src} style={{ zIndex: heroCreatorIcons.length - index }} />)}
+              </span>
+              <small><b>{count}</b> creators have already applied</small>
+            </div>
           </motion.div>
         </section>
 
