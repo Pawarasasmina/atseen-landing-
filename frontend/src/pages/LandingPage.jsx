@@ -169,7 +169,7 @@ function CompactFoundingProfile() {
 function SignalMarquee() {
   return (
     <div className="signal-marquee" aria-hidden="true">
-      <div>{Array.from({ length: 2 }, (_, group) => <span key={group}><b>REAL CONNECTION</b><i /><b>CREATOR VALUE</b><i /><b>SEENS</b><i /><b>WORLDS</b><i /><b>DIRECT ACCESS</b><i /></span>)}</div>
+      <div>{Array.from({ length: 2 }, (_, group) => <span key={group}><b>REAL CONNECTION</b><i /><b>CREATOR VALUE</b><i /><b>SEENS</b><i /><b>WORLDS</b><i /><b>DIRECT ACCESS</b></span>)}</div>
     </div>
   );
 }
@@ -249,8 +249,8 @@ export default function LandingPage() {
             <div className="experience-panel"><div className="experience-path" aria-hidden="true"><span /><span /><span /></div>{steps.map(([number, title, text, Icon]) => <Reveal className="experience-step" key={title}><span className="experience-index">{number}</span><span className="experience-icon"><Icon size={21} /></span><div><h3>{title}</h3><p><BrandText>{text}</BrandText></p></div></Reveal>)}</div>
             <div className="metric-row">{proofPoints.map(([title, text, Icon]) => <div className="metric" key={title}><span className="metric-icon"><Icon size={16} /></span><b>{title}</b><span>{text}</span></div>)}</div>
             <div className="founding-promises">
-              <Reveal className="founding-promise"><span>01</span><h3>No follower minimum.</h3><p>Worlds matter here. Numbers don&apos;t.</p></Reveal>
-              <Reveal className="founding-promise"><span>02</span><h3>You&apos;re in first.</h3><p>Founding registration opens by email invite — your place is saved.</p></Reveal>
+              <Reveal className="founding-promise"><span>01</span><h3>No follower minimum</h3><p>Worlds matter here. Numbers don&apos;t.</p></Reveal>
+              <Reveal className="founding-promise"><span>02</span><h3>You&apos;re in first</h3><p>Founding registration opens by email invite — your place is saved.</p></Reveal>
             </div>
           </div>
         </section>

@@ -1,11 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, ChevronDown, Globe2 } from 'lucide-react';
+import { Check, ChevronDown, Languages } from 'lucide-react';
 
 const languages = [
   ['en', 'English'], ['ar', 'Arabic'], ['ru', 'Russian'],
   ['es', 'Spanish'], ['fr', 'French'], ['pt', 'Portuguese'],
 ];
+
+function removeTranslatedHeadingStops() {
+  document.querySelectorAll('.section-title, .creator-benefits-heading h2, .application-shell .join-copy h2').forEach((heading) => {
+    const textNodes = [];
+    const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.nodeValue.trim()) textNodes.push(node);
+    }
+    const last = textNodes.at(-1);
+    if (last) last.nodeValue = last.nodeValue.replace(/[.。։۔]+(?=\s*$)/u, '');
+  });
+}
 
 function saveTranslationCookie(code) {
   const value = `/en/${code}`;
@@ -29,12 +42,16 @@ export default function LanguageSwitcher() {
   const [open, setOpen] = useState(false);
   const [language, setLanguage] = useState('en');
   const [floating, setFloating] = useState(false);
+  const [attention, setAttention] = useState(false);
   const rootRef = useRef(null);
 
   useEffect(() => {
     const saved = window.localStorage.getItem('site-language') || 'en';
     setLanguage(saved);
     document.documentElement.lang = saved;
+    const shouldShowHint = !window.localStorage.getItem('language-hint-seen');
+    setAttention(shouldShowHint);
+    const attentionTimer = window.setTimeout(() => setAttention(false), 5500);
     window.googleTranslateElementInit = () => {
       new window.google.translate.TranslateElement({
         pageLanguage: 'en',
@@ -53,11 +70,18 @@ export default function LanguageSwitcher() {
 
     const close = (event) => { if (!rootRef.current?.contains(event.target)) setOpen(false); };
     const updateFloating = () => setFloating(window.innerWidth < 768 && window.scrollY > 76);
+    const punctuationObserver = new MutationObserver(() => window.requestAnimationFrame(removeTranslatedHeadingStops));
     updateFloating();
+    removeTranslatedHeadingStops();
+    punctuationObserver.observe(document.body, { childList: true, characterData: true, subtree: true });
+    const punctuationTimers = [300, 800, 1600, 3000].map((delay) => window.setTimeout(removeTranslatedHeadingStops, delay));
     document.addEventListener('pointerdown', close);
     window.addEventListener('scroll', updateFloating, { passive: true });
     window.addEventListener('resize', updateFloating);
     return () => {
+      punctuationObserver.disconnect();
+      window.clearTimeout(attentionTimer);
+      punctuationTimers.forEach(window.clearTimeout);
       document.removeEventListener('pointerdown', close);
       window.removeEventListener('scroll', updateFloating);
       window.removeEventListener('resize', updateFloating);
@@ -76,14 +100,15 @@ export default function LanguageSwitcher() {
       return;
     }
     saveTranslationCookie(code);
-    applyTranslation(code);
+    window.location.reload();
   };
 
   const picker = (
-    <div className={`language-switcher notranslate ${floating ? 'language-switcher-floating' : ''}`} ref={rootRef}>
-      <button type="button" className="language-trigger" onClick={() => setOpen((current) => !current)} aria-haspopup="menu" aria-expanded={open} aria-label="Change language">
-        <Globe2 size={16} /><span>{language.toUpperCase()}</span><ChevronDown size={13} />
+    <div className={`language-switcher notranslate ${floating ? 'language-switcher-floating' : ''} ${attention ? 'language-attention' : ''}`} ref={rootRef}>
+      <button type="button" className="language-trigger" onClick={() => { setOpen((current) => !current); setAttention(false); window.localStorage.setItem('language-hint-seen', 'true'); }} aria-haspopup="menu" aria-expanded={open} aria-label="Change language">
+        <Languages size={17} /><span className="language-label">Language</span><b>{language.toUpperCase()}</b><ChevronDown size={13} />
       </button>
+      {attention && <span className="language-hint">Choose language</span>}
       {open && <div className="language-menu" role="menu">
         {languages.map(([code, label]) => <button type="button" role="menuitemradio" aria-checked={language === code} key={code} onClick={() => chooseLanguage(code)}><span>{label}</span>{language === code && <Check size={15} />}</button>)}
       </div>}
