@@ -99,6 +99,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .nav-link:hover, .nav-link-active { color: #fff; }
 .nav-link-active::after { right: 0; }
+.nav-actions { display: flex; align-items: center; gap: .65rem; }
+.language-switcher { position: relative; }
+.language-trigger { display: inline-flex; height: 38px; align-items: center; gap: .35rem; border: 1px solid rgba(255,255,255,.1); border-radius: 999px; background: rgba(12,17,24,.82); padding: 0 .72rem; color: rgba(230,241,253,.72); font-size: .68rem; font-weight: 800; transition: .2s; }
+.language-trigger:hover { border-color: rgba(156,203,255,.45); color: #fff; }
+.language-menu { position: absolute; z-index: 70; top: calc(100% + 10px); right: 0; width: 176px; overflow: hidden; border: 1px solid rgba(156,203,255,.18); border-radius: 14px; background: rgba(9,14,21,.98); padding: 6px; box-shadow: 0 18px 45px rgba(0,0,0,.48); backdrop-filter: blur(18px); }
+.language-menu button { display: flex; width: 100%; align-items: center; justify-content: space-between; border-radius: 9px; padding: .66rem .72rem; color: rgba(232,242,253,.7); font-size: .76rem; text-align: left; transition: .15s; }
+.language-menu button:hover, .language-menu button[aria-checked="true"] { background: rgba(156,203,255,.11); color: #fff; }
+#google_translate_element, .goog-te-banner-frame, .skiptranslate iframe { display: none !important; }
+body { top: 0 !important; }
+@media (max-width: 420px) { .language-trigger { width: 38px; justify-content: center; padding: 0; } .language-trigger span, .language-trigger svg:last-child { display: none; } .nav-actions { gap: .4rem; } }
 
 .ambient-scene {
   position: absolute;
@@ -1068,7 +1078,8 @@ select.field { color-scheme: dark; }
 .phone-region-trigger { display: inline-flex; width: 72px; height: 48px; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; background: #0a0c0f; padding: 0 .65rem; color: #dceeff; font-size: .78rem; transition: .2s; }
 .phone-region-trigger:hover, .phone-region-trigger:focus { border-color: #9ccbff; box-shadow: 0 0 0 3px rgba(156,203,255,.08), 0 0 20px rgba(156,203,255,.05); }
 .phone-region-menu { position: absolute; z-index: 20; top: calc(100% + 8px); left: 0; width: min(228px, calc(100vw - 72px)); max-height: 230px; overflow-y: auto; border: 1px solid rgba(156,203,255,.2); border-radius: 14px; background: #0b1017; padding: 6px; box-shadow: 0 18px 40px rgba(0,0,0,.52); }
-.phone-region-menu button { display: block; width: 100%; border-radius: 9px; padding: .65rem .75rem; color: rgba(235,245,255,.78); font-size: .76rem; text-align: left; transition: background .15s ease, color .15s ease; }
+.phone-region-menu button { display: flex; align-items: center; justify-content: space-between; gap: .75rem; width: 100%; border-radius: 9px; padding: .65rem .75rem; color: rgba(235,245,255,.78); font-size: .76rem; text-align: left; transition: background .15s ease, color .15s ease; }
+.phone-region-menu button span:last-child { flex: none; color: rgba(190,220,250,.55); font-variant-numeric: tabular-nums; }
 .phone-region-menu button:hover, .phone-region-menu button[aria-selected="true"] { background: rgba(156,203,255,.12); color: #dceeff; }
 @media (max-width: 380px) { .phone-region-trigger { width: 66px; padding-inline: .55rem; } }
 .join-signal { display: none; }
@@ -2159,4 +2170,52 @@ select.field { color-scheme: dark; }
   .star-field, .page-star-field { opacity: .22; }
   .founding-hero { background: rgba(2, 5, 8, .5); }
   #experience { background: rgba(2, 5, 8, .4); }
+}
+/* Keep the English composition stable when machine-translated copy expands. */
+html, body, .site-shell { direction: ltr !important; }
+.notranslate { direction: ltr !important; }
+@media (min-width: 768px) {
+  html:not([lang="en"]) .founding-hero-inner { max-width: 940px; }
+  html:not([lang="en"]) .founding-hero h1 { font-size: clamp(3.35rem, 5.4vw, 5.1rem); text-wrap: balance; }
+  html:not([lang="en"]) .section-title { font-size: clamp(2.2rem, 3.8vw, 3.7rem); text-wrap: balance; }
+  html:not([lang="en"]) .hero-creator-count { position: static; width: auto; margin-top: 18px; transform: none; }
+  html:not([lang="en"]) .founding-hero { min-height: clamp(500px, 62vh, 620px); }
+}
+/* Hide Google Translate's injected branding and overlays; the custom picker remains visible. */
+.goog-te-gadget,
+.goog-te-gadget-icon,
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+.goog-logo-link,
+#goog-gt-tt,
+body > .skiptranslate,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-aZ2wEe-OiiCO,
+.VIpgJd-yAWNEb-L7lbkb,
+iframe.skiptranslate { display: none !important; visibility: hidden !important; }
+.goog-text-highlight { background: transparent !important; box-shadow: none !important; }
+@media (max-width: 767px) {
+  .language-switcher-floating { position: fixed; z-index: 60; top: max(14px, env(safe-area-inset-top)); right: 14px; animation: language-float-in .2s ease both; }
+  .language-switcher-floating .language-trigger { border-color: rgba(156,203,255,.32); background: rgba(9,15,23,.94); box-shadow: 0 10px 30px rgba(0,0,0,.42), 0 0 18px rgba(156,203,255,.1); backdrop-filter: blur(16px); }
+  .language-switcher-floating .language-menu { position: absolute; top: calc(100% + 9px); right: 0; }
+}
+@keyframes language-float-in { from { opacity: 0; transform: translateY(-7px) scale(.94); } }
+/* Country-code menu: compact desktop geometry and site-matched scrollbar. */
+.phone-region-menu {
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156,203,255,.42) transparent;
+  scrollbar-gutter: stable;
+}
+.phone-region-menu::-webkit-scrollbar { width: 6px; }
+.phone-region-menu::-webkit-scrollbar-track { background: transparent; }
+.phone-region-menu::-webkit-scrollbar-thumb { border-radius: 999px; background: rgba(156,203,255,.38); }
+.phone-region-menu::-webkit-scrollbar-thumb:hover { background: rgba(156,203,255,.62); }
+.phone-region-menu button span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (min-width: 768px) {
+  .application-shell { overflow: visible; }
+  .application-shell::before { border-radius: inherit; }
+  .phone-region-menu { width: 280px; max-height: 260px; padding: 7px 5px 7px 7px; }
+  .phone-region-menu button { min-height: 40px; padding: .62rem .72rem; }
 }

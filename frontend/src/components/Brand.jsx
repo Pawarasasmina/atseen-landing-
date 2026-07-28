@@ -1,1 +1,1 @@
-export default function Brand({ className = '' }) { return <span className={`text-xl font-semibold tracking-[-.04em] ${className}`}><span className="text-ice">@</span>seen</span>; }
+export default function Brand({ className = '' }) { return <span className={`notranslate text-xl font-semibold tracking-[-.04em] ${className}`} translate="no"><span className="text-ice">@</span>seen</span>; }

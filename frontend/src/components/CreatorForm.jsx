@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, LoaderCircle, Send, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import api from '../lib/api';
 import { audiences, categories } from '../constants';
+import { BrandName, BrandText } from './BrandName';
 
 const defaults = {
   name: '',
@@ -17,32 +19,10 @@ const defaults = {
 };
 
 const trackedParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-const phoneRegions = [
-  ['+94', 'Sri Lanka'],
-  ['+1', 'United States & Canada'],
-  ['+44', 'United Kingdom'],
-  ['+61', 'Australia'],
-  ['+91', 'India'],
-  ['+971', 'United Arab Emirates'],
-  ['+65', 'Singapore'],
-  ['+49', 'Germany'],
-  ['+33', 'France'],
-  ['+39', 'Italy'],
-  ['+34', 'Spain'],
-  ['+31', 'Netherlands'],
-  ['+46', 'Sweden'],
-  ['+47', 'Norway'],
-  ['+55', 'Brazil'],
-  ['+27', 'South Africa'],
-  ['+234', 'Nigeria'],
-  ['+81', 'Japan'],
-  ['+82', 'South Korea'],
-  ['+63', 'Philippines'],
-  ['+62', 'Indonesia'],
-  ['+60', 'Malaysia'],
-  ['+92', 'Pakistan'],
-  ['+880', 'Bangladesh'],
-];
+const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+const phoneRegions = getCountries()
+  .map((country) => ({ country, name: regionNames.of(country), code: `+${getCountryCallingCode(country)}` }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 function normalizeHandle(value) {
   return value.trim().replace(/^@+/, '');
@@ -196,7 +176,7 @@ export default function CreatorForm({ onOpenLegal }) {
         </div>
         <h3>You have been <span>seen</span><i aria-hidden="true">&#10003;</i></h3>
         <p className="success-name">Hi {form.name.trim().split(/\s+/)[0] || 'Creator'},</p>
-        <p>We&apos;ve received your application<br /><b>@seen</b></p>
+        <p>We&apos;ve received your application<br /><b><BrandName /></b></p>
         <div className="success-status-card">
           <div><h4>You&apos;re in the running</h4><p>We&apos;ll be in touch if you&apos;re selected for early access.</p></div>
           <div className="success-stairway" aria-hidden="true"><img src="/images/seen-stairway.jpg" alt="" /></div>
@@ -219,7 +199,7 @@ export default function CreatorForm({ onOpenLegal }) {
       <Field label="TikTok"><input className="field" value={form.tiktok} onFocus={() => startSocialHandle('tiktok')} onChange={(event) => setSocialValue('tiktok', event.target.value)} placeholder="@yourhandle" /></Field>
       <Field label="Audience"><div className="audience-select"><select className="field" value={form.audience} onChange={(event) => setValue('audience', event.target.value)}>{audiences.map((audience) => <option key={audience}>{audience}</option>)}</select><ChevronDown size={17} aria-hidden="true" /></div></Field>
       <Field label="Email" error={errors.email}><input className="field" type="email" required value={form.email} onChange={(event) => setValue('email', event.target.value)} placeholder="you@example.com" /></Field>
-            <Field label="Phone" className="phone-app-field"><div className="phone-field"><div className="phone-region-wrap"><button type="button" className="phone-region-trigger" aria-label="Select phone region" aria-haspopup="listbox" aria-expanded={phonePickerOpen} onClick={() => setPhonePickerOpen((open) => !open)}>{form.phoneRegion}<ChevronDown size={14} /></button>{phonePickerOpen && <div className="phone-region-menu" role="listbox">{phoneRegions.map(([code, country]) => <button key={code} type="button" role="option" aria-selected={form.phoneRegion === code} onClick={() => { setValue('phoneRegion', code); setPhonePickerOpen(false); }}><span>{country}</span></button>)}</div>}</div><input className="field" inputMode="tel" autoComplete="tel-national" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Mobile number" /></div></Field>
+            <Field label="Phone" className="phone-app-field"><div className="phone-field"><div className="phone-region-wrap"><button type="button" className="phone-region-trigger" aria-label="Select phone region" aria-haspopup="listbox" aria-expanded={phonePickerOpen} onClick={() => setPhonePickerOpen((open) => !open)}>{form.phoneRegion}<ChevronDown size={14} /></button>{phonePickerOpen && <div className="phone-region-menu" role="listbox">{phoneRegions.map(({ country, name, code }) => <button key={country} type="button" role="option" aria-selected={form.phoneRegion === code} onClick={() => { setValue('phoneRegion', code); setPhonePickerOpen(false); }}><span>{name}</span><span>{code}</span></button>)}</div>}</div><input className="field" inputMode="tel" autoComplete="tel-national" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Mobile number" /></div></Field>
       <div className="consent-field md:col-span-2">
         <label>
           <input type="checkbox" checked={consentGiven} onChange={(event) => { setConsentGiven(event.target.checked); setErrors((current) => ({ ...current, consent: undefined })); }} required />
@@ -228,7 +208,7 @@ export default function CreatorForm({ onOpenLegal }) {
         {errors.consent && <em role="alert">{errors.consent}</em>}
       </div>
       <button type="submit" disabled={busy} className="send-button md:col-span-2">{busy ? <LoaderCircle className="animate-spin" size={18} /> : <Send size={17} />}Send application</button>
-      <div className="form-fine md:col-span-2"><p>Your information is used to manage the @Seen early-access waitlist and send essential updates about your application.</p><p>Submitting an application does not guarantee acceptance or access.</p></div>
+      <div className="form-fine md:col-span-2"><p><BrandText>Your information is used to manage the @seen early-access waitlist and send essential updates about your application.</BrandText></p><p>Submitting an application does not guarantee acceptance or access.</p></div>
     </form>
   );
 }

@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { BrandName, BrandText } from './BrandName';
 
 const notices = {
   'Privacy Notice': {
@@ -31,11 +32,11 @@ export default function LegalModal({ type, onClose }) {
     <div className="legal-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="legal-title" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <div className="legal-modal-panel">
         <div className="legal-modal-head">
-          <div><p>@Seen early access</p><h2 id="legal-title">{type}</h2></div>
+          <div><p><BrandName /> early access</p><h2 id="legal-title">{type}</h2></div>
           <button type="button" onClick={onClose} aria-label="Close dialog"><X size={20} /></button>
         </div>
         <div className="legal-modal-copy">
-          {notice.sections.map(([heading, text]) => <section key={heading}><h3>{heading}</h3><p>{text}</p></section>)}
+          {notice.sections.map(([heading, text]) => <section key={heading}><h3>{heading}</h3><p><BrandText>{text}</BrandText></p></section>)}
           <p className="legal-contact">Privacy questions: <a href="mailto:privacy@atseen.com">privacy@atseen.com</a></p>
           <small>Last updated: {notice.updated}</small>
         </div>

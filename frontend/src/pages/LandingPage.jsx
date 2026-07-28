@@ -22,8 +22,10 @@ import {
   Sparkles,
 } from 'lucide-react';
 import Brand from '../components/Brand';
+import { BrandName, BrandText } from '../components/BrandName';
 import CreatorForm from '../components/CreatorForm';
 import LegalModal from '../components/LegalModal';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import Reveal from '../components/Reveal';
 import api from '../lib/api';
 
@@ -98,7 +100,7 @@ function Nav() {
           <a className="nav-link" href="#apply">Apply</a>
           <a href="/admin/login" className="text-sm text-white/40 transition hover:text-white">Login</a>
         </div>
-        <a href="#apply" className="glow-button glow-button-small"><span>Apply now</span></a>
+        <div className="nav-actions"><LanguageSwitcher /><a href="#apply" className="glow-button glow-button-small"><span>Apply now</span></a></div>
       </nav>
     </header>
   );
@@ -179,14 +181,14 @@ function CreatorBenefits() {
       <div className="creator-benefits-inner">
         <Reveal className="creator-benefits-heading">
           <p className="section-label">Built for creators</p>
-          <h2>A new place to <span>grow, get discovered, and earn.</span></h2>
+          <h2>A new place to <span>grow, get discovered, and earn</span></h2>
           <p>Built for creators who want more than followers.</p>
         </Reveal>
         <div className="creator-benefits-grid">
           {creatorBenefits.map(([title, text, Icon], index) => (
             <Reveal className="creator-benefit-card" key={title} style={{ transitionDelay: `${index * 55}ms` }}>
               <span className="creator-benefit-icon"><Icon size={19} /></span>
-              <div><h3>{title}</h3><p>{text}</p></div>
+              <div><h3>{title}</h3><p><BrandText>{text}</BrandText></p></div>
               <small>{String(index + 1).padStart(2, '0')}</small>
             </Reveal>
           ))}
@@ -228,8 +230,8 @@ export default function LandingPage() {
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .75 }} className="founding-hero-inner">
             <EyeMark className="hero-eye" />
             <div className="founding-tag"><span />Founding creators· early access</div>
-            <h1>Be seen <span>first.</span></h1>
-            <p>@seen opens with a <b>limited founding circle</b> of creators. A new social platform where fans step into your real world and pay to get closer.</p>
+            <h1>Be seen <span>first</span></h1>
+            <p><BrandName /> opens with a <b>limited founding circle</b> of creators. A new social platform where fans step into your real world and pay to get closer.</p>
             <div className="hero-actions"><a ref={heroApplyRef} href="#apply" className="glow-button"><span>Apply now <ArrowRight size={17} /></span></a><a href="#experience" className="outline-button">How it works <ArrowDown size={16} /></a></div>
           </motion.div>
           <div className="hero-creator-count">
@@ -243,8 +245,8 @@ export default function LandingPage() {
 
         <section id="experience" className="section-space relative">
           <div className="mx-auto max-w-7xl px-5">
-            <Reveal className="mb-14 text-center"><p className="section-label justify-center">We invite you </p><h2 className="section-title mx-auto max-w-4xl">Free to create <br /><span>and get  paid.</span></h2></Reveal>
-            <div className="experience-panel"><div className="experience-path" aria-hidden="true"><span /><span /><span /></div>{steps.map(([number, title, text, Icon]) => <Reveal className="experience-step" key={title}><span className="experience-index">{number}</span><span className="experience-icon"><Icon size={21} /></span><div><h3>{title}</h3><p>{text}</p></div></Reveal>)}</div>
+            <Reveal className="mb-14 text-center"><p className="section-label justify-center">We invite you </p><h2 className="section-title mx-auto max-w-4xl">Free to create <br /><span>and get paid</span></h2></Reveal>
+            <div className="experience-panel"><div className="experience-path" aria-hidden="true"><span /><span /><span /></div>{steps.map(([number, title, text, Icon]) => <Reveal className="experience-step" key={title}><span className="experience-index">{number}</span><span className="experience-icon"><Icon size={21} /></span><div><h3>{title}</h3><p><BrandText>{text}</BrandText></p></div></Reveal>)}</div>
             <div className="metric-row">{proofPoints.map(([title, text, Icon]) => <div className="metric" key={title}><span className="metric-icon"><Icon size={16} /></span><b>{title}</b><span>{text}</span></div>)}</div>
             <div className="founding-promises">
               <Reveal className="founding-promise"><span>01</span><h3>No follower minimum.</h3><p>Worlds matter here. Numbers don&apos;t.</p></Reveal>
@@ -261,7 +263,7 @@ export default function LandingPage() {
             <Reveal className="founder-story-copy">
               <div className="quote-signal" aria-hidden="true"><Eye size={21} /><i /><Sparkles size={14} /></div>
               <blockquote>&ldquo;Followers look. Fans invest.<br />We built the place where they can.&rdquo;</blockquote>
-              <p>&mdash; the @seen founding team</p>
+              <p>&mdash; the <BrandName /> founding team</p>
             </Reveal>
             <Reveal className="founder-story-profile"><CompactFoundingProfile /></Reveal>
           </div>
@@ -270,7 +272,7 @@ export default function LandingPage() {
         <section ref={applicationRef} id="apply" className="section-space join-section">
           <div className="mx-auto max-w-6xl px-5">
             <div className="join-shell application-shell"><div className="join-light" />
-              <Reveal className="join-copy"><div className="eyebrow"><span /> The application</div><h2>Join the early-access waitlist.</h2><p>We read every application ourselves. Follower count matters less than a World worth stepping into.</p><div className="join-points"><span><Check size={14} /> Confirmation, not approval</span><span><Mail size={14} /> Essential waitlist updates</span></div><div className="join-signal" aria-hidden="true"><span><i /> Founding signal</span><b>Ready in 02:00</b></div><div className="join-preview"><div className="join-preview-head"><span>Founding path</span><b><i /> Live</b></div><div className="join-preview-steps"><span><b>01</b> Apply</span><span><b>02</b> Review</span><span><b>03</b> Updates</span></div><p>Every application gets a personal review.</p></div><div className="join-signoff"><Eye size={23} strokeWidth={1.5} /><div><b>@seen</b><span>We’ll meet there soon.</span></div></div></Reveal>
+              <Reveal className="join-copy"><div className="eyebrow"><span /> The application</div><h2>Join the early-access waitlist</h2><p>We read every application ourselves. Follower count matters less than a World worth stepping into.</p><div className="join-points"><span><Check size={14} /> Confirmation, not approval</span><span><Mail size={14} /> Essential waitlist updates</span></div><div className="join-signal" aria-hidden="true"><span><i /> Founding signal</span><b>Ready in 02:00</b></div><div className="join-preview"><div className="join-preview-head"><span>Founding path</span><b><i /> Live</b></div><div className="join-preview-steps"><span><b>01</b> Apply</span><span><b>02</b> Review</span><span><b>03</b> Updates</span></div><p>Every application gets a personal review.</p></div><div className="join-signoff"><Eye size={23} strokeWidth={1.5} /><div><b><BrandName /></b><span>We’ll meet there soon.</span></div></div></Reveal>
               <Reveal className="join-form"><CreatorForm onOpenLegal={setLegal} /></Reveal>
             </div>
           </div>
@@ -296,7 +298,7 @@ export default function LandingPage() {
             <a href="https://t.me/atseen" target="_blank" rel="noreferrer"><Send size={15} /> Telegram</a>
           </div>
           <div className="footer-emails"><a href="mailto:creators@atseen.com">creators@atseen.com</a><span>·</span><a href="mailto:hello@atseen.com">hello@atseen.com</a></div>
-          <p>@seen · We see you. Every day.</p>
+          <p><BrandName /> · We see you. Every day.</p>
           <div className="footer-legal"><button onClick={() => setLegal('Privacy Notice')}>Privacy Notice</button><span>·</span><button onClick={() => setLegal('Early Access Terms')}>Early Access Terms</button><span>·</span><a href="mailto:privacy@atseen.com">Contact</a></div>
         </div>
       </footer>
