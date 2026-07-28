@@ -2219,3 +2219,9 @@ iframe.skiptranslate { display: none !important; visibility: hidden !important; 
   .phone-region-menu { width: 280px; max-height: 260px; padding: 7px 5px 7px 7px; }
   .phone-region-menu button { min-height: 40px; padding: .62rem .72rem; }
 }
+/* Keep the active two-letter language visible on the smallest mobile screens. */
+@media (max-width: 420px) {
+  .language-trigger { width: auto; min-width: 58px; justify-content: center; gap: .38rem; padding: 0 .65rem; }
+  .language-trigger span { display: inline; }
+  .language-trigger svg:last-child { display: none; }
+}

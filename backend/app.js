@@ -15,7 +15,17 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 const app = express();
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: {
+    directives: {
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://translate.google.com', 'https://translate.googleapis.com', 'https://translate-pa.googleapis.com', 'https://www.gstatic.com', 'https://static.cloudflareinsights.com'],
+      connectSrc: ["'self'", 'https://translate.google.com', 'https://translate.googleapis.com', 'https://translate-pa.googleapis.com', 'https://www.google.com'],
+      imgSrc: ["'self'", 'data:', 'https://translate.google.com', 'https://www.google.com', 'https://www.gstatic.com', 'https://fonts.gstatic.com'],
+      frameSrc: ["'self'", 'https://translate.google.com', 'https://www.google.com'],
+    },
+  },
+}));
 app.use(cors({ origin: process.env.CLIENT_URL?.split(',').map((url) => url.trim()) || 'http://localhost:5173', credentials: true, methods: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: false, limit: '100kb' }));

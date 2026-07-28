@@ -8,3 +8,8 @@ logs/
 coverage/
 .DS_Store
 .vite/
+.chrome-debug-profile/
+.chrome-debug-profile-2/
+.chrome-translate-final/
+.edge-translate-final/
+.chrome-final-1785237367310/

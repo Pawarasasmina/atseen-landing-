@@ -7,6 +7,24 @@ const languages = [
   ['es', 'Spanish'], ['fr', 'French'], ['pt', 'Portuguese'],
 ];
 
+function saveTranslationCookie(code) {
+  const value = `/en/${code}`;
+  const options = 'path=/; max-age=31536000; SameSite=Lax';
+  document.cookie = `googtrans=${value}; ${options}`;
+  if (window.location.hostname.includes('.')) document.cookie = `googtrans=${value}; ${options}; domain=.${window.location.hostname}`;
+}
+
+function applyTranslation(code, attempt = 0) {
+  const select = document.querySelector('.goog-te-combo');
+  if (select?.querySelector(`option[value="${code}"]`)) {
+    select.value = code;
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    return;
+  }
+  if (window.google?.translate && !document.querySelector('#google_translate_element select')) window.googleTranslateElementInit?.();
+  if (attempt < 48) window.setTimeout(() => applyTranslation(code, attempt + 1), 250);
+}
+
 export default function LanguageSwitcher() {
   const [open, setOpen] = useState(false);
   const [language, setLanguage] = useState('en');
@@ -23,6 +41,7 @@ export default function LanguageSwitcher() {
         includedLanguages: languages.map(([code]) => code).join(','),
         autoDisplay: false,
       }, 'google_translate_element');
+      if (saved !== 'en') window.setTimeout(() => applyTranslation(saved), 100);
     };
     if (!document.querySelector('script[data-google-translate]')) {
       const script = document.createElement('script');
@@ -56,14 +75,8 @@ export default function LanguageSwitcher() {
       window.location.reload();
       return;
     }
-    const apply = () => {
-      const select = document.querySelector('.goog-te-combo');
-      if (!select) return false;
-      select.value = code;
-      select.dispatchEvent(new Event('change'));
-      return true;
-    };
-    if (!apply()) window.setTimeout(apply, 700);
+    saveTranslationCookie(code);
+    applyTranslation(code);
   };
 
   const picker = (
@@ -74,9 +87,11 @@ export default function LanguageSwitcher() {
       {open && <div className="language-menu" role="menu">
         {languages.map(([code, label]) => <button type="button" role="menuitemradio" aria-checked={language === code} key={code} onClick={() => chooseLanguage(code)}><span>{label}</span>{language === code && <Check size={15} />}</button>)}
       </div>}
-      <div id="google_translate_element" aria-hidden="true" />
     </div>
   );
 
-  return floating ? createPortal(picker, document.body) : picker;
+  return <>
+    <div id="google_translate_element" aria-hidden="true" />
+    {floating ? createPortal(picker, document.body) : picker}
+  </>;
 }
