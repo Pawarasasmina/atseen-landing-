@@ -2278,3 +2278,70 @@ iframe.skiptranslate { display: none !important; visibility: hidden !important; 
   .site-nav .language-trigger, .language-switcher-floating .language-trigger { width: auto; min-width: 0; padding-right: .58rem; }
   .site-nav .language-label, .language-switcher-floating .language-label { display: none; }
 }
+/* Responsive admin leads and mobile filter drawer. */
+.leads-page-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
+.leads-page-heading h1 { margin-top: .5rem; font-size: clamp(1.8rem, 4vw, 2.25rem); font-weight: 650; letter-spacing: -.035em; }
+.mobile-filter-button { display: none; align-items: center; gap: .5rem; border: 1px solid rgba(156,203,255,.22); border-radius: 999px; background: rgba(156,203,255,.08); padding: .7rem 1rem; color: #bfe3ff; font-size: .78rem; font-weight: 750; }
+.lead-filters { display: grid; gap: .75rem; margin-top: 1.75rem; padding: 1rem; }
+.lead-filters-head { display: none; }
+.lead-filter-actions { display: flex; gap: .5rem; }
+.lead-filter-actions .btn { min-width: 0; flex: 1; white-space: nowrap; }
+.lead-date-field > span { display: none; }
+.lead-results-count { display: flex; align-items: center; justify-content: space-between; margin-top: 1.25rem; color: rgba(255,255,255,.45); font-size: .86rem; }
+.leads-results-panel { margin-top: 1rem; overflow: hidden; }
+.lead-desktop-table { overflow-x: auto; }
+.lead-mobile-list { display: none; }
+.lead-status-select { max-width: 145px; border: 1px solid rgba(255,255,255,.1); border-radius: 9px; background: #0a0c0f; padding: .5rem .58rem; color: rgba(239,247,255,.82); font-size: .72rem; }
+.lead-actions { display: flex; gap: .25rem; }
+.lead-actions a, .lead-actions button { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 9px; color: rgba(222,238,253,.62); transition: .18s; }
+.lead-actions a:hover { background: rgba(156,203,255,.1); color: #bfe3ff; }
+.lead-actions button { color: #f17878; }
+.lead-actions button:hover { background: rgba(241,120,120,.1); }
+.lead-pagination { display: flex; align-items: center; justify-content: flex-end; gap: .75rem; margin-top: 1.25rem; }
+.lead-pagination span { color: rgba(255,255,255,.45); font-size: .8rem; }
+.lead-filter-backdrop { display: none; }
+@media (min-width: 768px) {
+  .lead-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .lead-filters .lead-search-wrap { grid-column: span 2; }
+}
+@media (min-width: 1280px) {
+  .lead-filters { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  body.admin-filters-open { overflow: hidden; }
+  .leads-page-heading { align-items: center; }
+  .leads-page-heading h1 { font-size: 1.9rem; }
+  .mobile-filter-button { display: inline-flex; }
+  .lead-filter-backdrop { position: fixed; z-index: 54; inset: 0; display: block; background: rgba(0,0,0,.66); backdrop-filter: blur(3px); }
+  .lead-filters { position: fixed; z-index: 55; top: 0; right: 0; bottom: 0; width: min(88vw, 360px); overflow-y: auto; align-content: start; margin: 0; border: 0; border-left: 1px solid rgba(156,203,255,.18); border-radius: 24px 0 0 24px; background: #0c1118; padding: max(22px, env(safe-area-inset-top)) 18px max(22px, env(safe-area-inset-bottom)); box-shadow: -24px 0 70px rgba(0,0,0,.55); transform: translateX(105%); transition: transform .26s ease; }
+  .lead-filters-open { transform: translateX(0); }
+  .lead-filters-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
+  .lead-filters-head p { color: #9ccbff; font-size: .58rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+  .lead-filters-head h2 { margin-top: .25rem; font-size: 1.55rem; font-weight: 700; }
+  .lead-filters-head button { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid rgba(255,255,255,.1); border-radius: 50%; color: rgba(255,255,255,.7); }
+  .lead-date-field > span { display: block; margin: 0 0 .4rem .2rem; color: rgba(255,255,255,.42); font-size: .66rem; font-weight: 700; text-transform: uppercase; }
+  .lead-filter-actions { position: sticky; bottom: 0; margin-top: .4rem; background: linear-gradient(transparent, #0c1118 28%); padding-top: 1.1rem; }
+  .lead-filter-actions .btn { min-height: 46px; }
+  .lead-results-count { margin-top: 1.5rem; }
+  .leads-results-panel { overflow: visible; border: 0; background: transparent; box-shadow: none; }
+  .lead-desktop-table { display: none; }
+  .lead-mobile-list { display: grid; gap: .75rem; }
+  .lead-mobile-card { position: relative; overflow: hidden; border: 1px solid rgba(156,203,255,.14); border-radius: 18px; background: linear-gradient(145deg, rgba(17,23,32,.96), rgba(9,13,19,.98)); padding: 16px; }
+  .lead-card-top { display: flex; align-items: start; justify-content: space-between; gap: .75rem; }
+  .lead-card-top h2 { min-width: 0; overflow: hidden; color: #f4f8fd; font-size: 1.05rem; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+  .lead-card-top p { margin-top: .25rem; color: rgba(255,255,255,.35); font-size: .68rem; }
+  .lead-card-contact { display: flex; min-width: 0; flex-direction: column; gap: .25rem; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,.06); padding-top: .85rem; font-size: .77rem; }
+  .lead-card-contact a { overflow: hidden; color: #bfe3ff; text-overflow: ellipsis; white-space: nowrap; }
+  .lead-card-contact span { color: rgba(255,255,255,.4); }
+  .lead-mobile-card dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin-top: 1rem; }
+  .lead-mobile-card dt { color: rgba(255,255,255,.3); font-size: .56rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+  .lead-mobile-card dd { overflow: hidden; margin-top: .25rem; color: rgba(239,247,255,.7); font-size: .72rem; text-overflow: ellipsis; white-space: nowrap; }
+  .lead-mobile-card > .lead-actions { position: absolute; right: 12px; bottom: 12px; }
+  .lead-mobile-card { padding-bottom: 56px; }
+  .lead-pagination { justify-content: space-between; }
+  .lead-pagination .btn { padding: .65rem .85rem; font-size: .75rem; }
+}
+@media (max-width: 380px) {
+  .mobile-filter-button { width: 42px; height: 42px; justify-content: center; padding: 0; font-size: 0; }
+  .lead-filters { width: 94vw; }
+}
