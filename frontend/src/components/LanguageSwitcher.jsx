@@ -1,122 +1,50 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown, Languages } from 'lucide-react';
-
-const languages = [
-  ['en', 'English'], ['ar', 'Arabic'], ['ru', 'Russian'],
-  ['es', 'Spanish'], ['fr', 'French'], ['pt', 'Portuguese'],
-];
-
-function removeTranslatedHeadingStops() {
-  document.querySelectorAll('.section-title, .creator-benefits-heading h2, .application-shell .join-copy h2').forEach((heading) => {
-    const textNodes = [];
-    const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      if (node.nodeValue.trim()) textNodes.push(node);
-    }
-    const last = textNodes.at(-1);
-    if (last) last.nodeValue = last.nodeValue.replace(/[.。։۔]+(?=\s*$)/u, '');
-  });
-}
-
-function saveTranslationCookie(code) {
-  const value = `/en/${code}`;
-  const options = 'path=/; max-age=31536000; SameSite=Lax';
-  document.cookie = `googtrans=${value}; ${options}`;
-  if (window.location.hostname.includes('.')) document.cookie = `googtrans=${value}; ${options}; domain=.${window.location.hostname}`;
-}
-
-function applyTranslation(code, attempt = 0) {
-  const select = document.querySelector('.goog-te-combo');
-  if (select?.querySelector(`option[value="${code}"]`)) {
-    select.value = code;
-    select.dispatchEvent(new Event('change', { bubbles: true }));
-    return;
-  }
-  if (window.google?.translate && !document.querySelector('#google_translate_element select')) window.googleTranslateElementInit?.();
-  if (attempt < 48) window.setTimeout(() => applyTranslation(code, attempt + 1), 250);
-}
+import { useLanguage } from '../context/LanguageContext';
+import { languages } from '../i18n/translations';
 
 export default function LanguageSwitcher() {
+  const { language, setLanguage } = useLanguage();
   const [open, setOpen] = useState(false);
-  const [language, setLanguage] = useState('en');
   const [floating, setFloating] = useState(false);
-  const [attention, setAttention] = useState(false);
-  const rootRef = useRef(null);
+  const navRef = useRef(null);
+  const floatingRef = useRef(null);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem('site-language') || 'en';
-    setLanguage(saved);
-    document.documentElement.lang = saved;
-    const shouldShowHint = !window.localStorage.getItem('language-hint-seen');
-    setAttention(shouldShowHint);
-    const attentionTimer = window.setTimeout(() => setAttention(false), 5500);
-    window.googleTranslateElementInit = () => {
-      new window.google.translate.TranslateElement({
-        pageLanguage: 'en',
-        includedLanguages: languages.map(([code]) => code).join(','),
-        autoDisplay: false,
-      }, 'google_translate_element');
-      if (saved !== 'en') window.setTimeout(() => applyTranslation(saved), 100);
+    const close = (event) => {
+      if (!navRef.current?.contains(event.target) && !floatingRef.current?.contains(event.target)) setOpen(false);
     };
-    if (!document.querySelector('script[data-google-translate]')) {
-      const script = document.createElement('script');
-      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-      script.async = true;
-      script.dataset.googleTranslate = 'true';
-      document.head.appendChild(script);
-    } else if (window.google?.translate) window.googleTranslateElementInit();
-
-    const close = (event) => { if (!rootRef.current?.contains(event.target)) setOpen(false); };
-    const updateFloating = () => setFloating(window.innerWidth < 768 && window.scrollY > 76);
-    const punctuationObserver = new MutationObserver(() => window.requestAnimationFrame(removeTranslatedHeadingStops));
-    updateFloating();
-    removeTranslatedHeadingStops();
-    punctuationObserver.observe(document.body, { childList: true, characterData: true, subtree: true });
-    const punctuationTimers = [300, 800, 1600, 3000].map((delay) => window.setTimeout(removeTranslatedHeadingStops, delay));
+    const onViewportChange = () => {
+      const shouldFloat = window.innerWidth < 768 && window.scrollY > 90;
+      setFloating(shouldFloat);
+      if (!shouldFloat) setOpen(false);
+    };
     document.addEventListener('pointerdown', close);
-    window.addEventListener('scroll', updateFloating, { passive: true });
-    window.addEventListener('resize', updateFloating);
+    window.addEventListener('scroll', onViewportChange, { passive: true });
+    window.addEventListener('resize', onViewportChange);
+    onViewportChange();
     return () => {
-      punctuationObserver.disconnect();
-      window.clearTimeout(attentionTimer);
-      punctuationTimers.forEach(window.clearTimeout);
       document.removeEventListener('pointerdown', close);
-      window.removeEventListener('scroll', updateFloating);
-      window.removeEventListener('resize', updateFloating);
+      window.removeEventListener('scroll', onViewportChange);
+      window.removeEventListener('resize', onViewportChange);
     };
   }, []);
 
-  const chooseLanguage = (code) => {
-    window.localStorage.setItem('site-language', code);
-    setLanguage(code);
-    setOpen(false);
-    document.documentElement.lang = code;
-    if (code === 'en') {
-      document.cookie = 'googtrans=/en/en; path=/; max-age=0';
-      document.cookie = `googtrans=/en/en; path=/; domain=.${window.location.hostname}; max-age=0`;
-      window.location.reload();
-      return;
-    }
-    saveTranslationCookie(code);
-    window.location.reload();
-  };
-
-  const picker = (
-    <div className={`language-switcher notranslate ${floating ? 'language-switcher-floating' : ''} ${attention ? 'language-attention' : ''}`} ref={rootRef}>
-      <button type="button" className="language-trigger" onClick={() => { setOpen((current) => !current); setAttention(false); window.localStorage.setItem('language-hint-seen', 'true'); }} aria-haspopup="menu" aria-expanded={open} aria-label="Change language">
-        <Languages size={17} /><span className="language-label">Language</span><b>{language.toUpperCase()}</b><ChevronDown size={13} />
+  const control = (isFloating = false) => (
+    <div className={`language-switcher notranslate ${isFloating ? 'language-switcher-floating' : ''}`} ref={isFloating ? floatingRef : navRef} translate="no">
+      <button type="button" className="language-trigger" onClick={() => setOpen((current) => !current)} aria-haspopup="menu" aria-expanded={open} aria-label="Change language">
+        <Languages size={17} /><b>{language.toUpperCase()}</b><ChevronDown size={13} />
       </button>
-      {attention && <span className="language-hint">Choose language</span>}
       {open && <div className="language-menu" role="menu">
-        {languages.map(([code, label]) => <button type="button" role="menuitemradio" aria-checked={language === code} key={code} onClick={() => chooseLanguage(code)}><span>{label}</span>{language === code && <Check size={15} />}</button>)}
+        {languages.map(([code, label]) => (
+          <button type="button" role="menuitemradio" aria-checked={language === code} key={code} onClick={() => { setLanguage(code); setOpen(false); }}>
+            <span>{label}</span>{language === code && <Check size={15} />}
+          </button>
+        ))}
       </div>}
     </div>
   );
 
-  return <>
-    <div id="google_translate_element" aria-hidden="true" />
-    {floating ? createPortal(picker, document.body) : picker}
-  </>;
+  return <>{!floating && control()}{floating && createPortal(control(true), document.body)}</>;
 }

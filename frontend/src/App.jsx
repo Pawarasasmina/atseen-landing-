@@ -8,9 +8,10 @@ import LeadDetails from './pages/LeadDetails';
 import AdminLayout from './components/AdminLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 
 export default function App() {
-  return <BrowserRouter><AuthProvider><Routes>
+  return <LanguageProvider><BrowserRouter><AuthProvider><Routes>
     <Route path="/" element={<LandingPage />} />
     <Route path="/share" element={<ShareInvite />} />
     <Route path="/admin/login" element={<AdminLogin />} />
@@ -20,5 +21,5 @@ export default function App() {
       <Route path="/admin/leads/:id" element={<LeadDetails />} />
     </Route></Route>
     <Route path="*" element={<LandingPage />} />
-  </Routes><Toaster position="bottom-right" toastOptions={{ style: { background: '#181D25', color: '#fff', border: '1px solid rgba(255,255,255,.08)' } }} /></AuthProvider></BrowserRouter>;
+  </Routes><Toaster position="bottom-right" toastOptions={{ style: { background: '#181D25', color: '#fff', border: '1px solid rgba(255,255,255,.08)' } }} /></AuthProvider></BrowserRouter></LanguageProvider>;
 }
