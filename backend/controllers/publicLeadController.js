@@ -71,6 +71,10 @@ const getOffset = () => Number.parseInt(process.env.APPLICATION_COUNT_OFFSET || 
 const emailDeliveryEnabled = () => Boolean(process.env.RESEND_API_KEY?.trim());
 
 function buildApplyPayload(body, req) {
+  const original = req.originalApplicationBody || body;
+  const submittedOriginal = original.originalAnswers && typeof original.originalAnswers === 'object'
+    ? original.originalAnswers
+    : original;
   const niches = Array.isArray(body.niches) ? body.niches.map((item) => cleanString(item, 80)).filter(Boolean).slice(0, 12) : [];
   const primaryNiche = niches[0] || cleanString(body.creatorCategory, 80) || 'Content';
   const instagram = cleanHandle(body.instagram);
@@ -91,6 +95,17 @@ function buildApplyPayload(body, req) {
     socialProfileUrl: cleanString(body.socialProfileUrl, 500),
     audienceSize: cleanString(body.audience || body.audienceSize, 40),
     creatorDescription: cleanString(body.why || body.creatorDescription, 1000),
+    originalAnswers: {
+      fullName: String(submittedOriginal.name || submittedOriginal.fullName || '').slice(0, 120),
+      email: String(submittedOriginal.email || '').slice(0, 190),
+      phone: String(submittedOriginal.phone || '').slice(0, 40),
+      country: String(submittedOriginal.country || '').slice(0, 100),
+      city: String(submittedOriginal.city || '').slice(0, 100),
+      instagram: String(submittedOriginal.instagram || '').slice(0, 80),
+      tiktok: String(submittedOriginal.tiktok || '').slice(0, 80),
+      socialProfileUrl: String(submittedOriginal.socialProfileUrl || '').slice(0, 500),
+      creatorDescription: String(submittedOriginal.why || submittedOriginal.creatorDescription || '').slice(0, 1000),
+    },
     consentGiven: body.consentGiven === true,
     consentAt: body.consentGiven === true ? new Date() : null,
     ref: cleanString(body.ref, 120),
@@ -169,7 +184,7 @@ function notificationEmail(payload, req) {
   return `<!doctype html><html><body style="margin:0;padding:0;background:#06080B;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#06080B;"><tr><td align="center" style="padding:32px 16px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:680px;"><tr><td style="padding:0 4px 22px;">${emailLogo(baseUrl)}</td></tr><tr><td style="border:1px solid #263345;border-radius:22px;background:#0F151E;padding:28px;"><div style="color:#9CCBFF;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">New creator application</div><h1 style="margin:10px 0 22px;color:#F7FAFF;font-family:Arial,Helvetica,sans-serif;font-size:28px;line-height:1.2;">${escapeHtml(payload.fullName)}</h1><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="overflow:hidden;border:1px solid #222B38;border-radius:14px;border-collapse:separate;border-spacing:0;font-family:Arial,Helvetica,sans-serif;">${rows}</table></td></tr></table></td></tr></table></body></html>`;
 }
 
-function confirmationEmail(payload, req) {
+export function confirmationEmail(payload, req) {
   const baseUrl = publicBaseUrl(req);
   const shareUrl = `${baseUrl}/share?ref=${encodeURIComponent(payload.referralCode)}`;
   const eyeUrl = `${baseUrl}/images/seen-eye.png`;

@@ -3,9 +3,11 @@ import { Eye, Search, SlidersHorizontal, Trash2, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
-import { categories, statuses, statusLabel } from '../constants';
+import { statuses, statusLabel } from '../constants';
 
-const initial = { search: '', status: '', category: '', country: '', dateFrom: '', dateTo: '' };
+const initial = { search: '', status: '', category: '', country: '', sort: '-submittedAt', dateFrom: '', dateTo: '' };
+const original = (lead, field) => lead.originalAnswers?.[field] || lead[field] || '';
+const leadCategories = (lead) => lead.niches?.length ? lead.niches : [lead.creatorCategory].filter(Boolean);
 
 export default function Leads() {
   const [filters, setFilters] = useState(initial);
@@ -17,23 +19,24 @@ export default function Leads() {
 
   const load = useCallback(() => {
     setError(false);
-    api.get('/admin/leads', { params: { ...query, page, limit: 20, sort: '-submittedAt' } })
+    api.get('/admin/leads', { params: { ...query, page, limit: 20 } })
       .then((response) => setData(response.data))
       .catch(() => setError(true));
   }, [query, page]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setPage(1);
+      setQuery(filters);
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [filters]);
+  useEffect(() => {
     document.body.classList.toggle('admin-filters-open', filtersOpen);
     return () => document.body.classList.remove('admin-filters-open');
   }, [filtersOpen]);
 
-  const search = (event) => {
-    event.preventDefault();
-    setPage(1);
-    setQuery(filters);
-    setFiltersOpen(false);
-  };
 
   const clearFilters = () => {
     setFilters(initial);
@@ -50,7 +53,7 @@ export default function Leads() {
   };
 
   const remove = async (lead) => {
-    if (!window.confirm(`Permanently delete ${lead.fullName}'s lead? This cannot be undone.`)) return;
+    if (!window.confirm(`Permanently delete ${original(lead, 'fullName')}'s lead? This cannot be undone.`)) return;
     try {
       await api.delete(`/admin/leads/${lead._id}`);
       toast.success('Lead deleted');
@@ -59,7 +62,7 @@ export default function Leads() {
   };
 
   const filterForm = (
-    <form onSubmit={search} className={`lead-filters panel ${filtersOpen ? 'lead-filters-open' : ''}`}>
+    <form onSubmit={(event) => event.preventDefault()} className={`lead-filters panel ${filtersOpen ? 'lead-filters-open' : ''}`}>
       <div className="lead-filters-head">
         <div><p>Refine results</p><h2>Filters</h2></div>
         <button type="button" onClick={() => setFiltersOpen(false)} aria-label="Close filters"><X size={20} /></button>
@@ -72,15 +75,14 @@ export default function Leads() {
         <option value="">All statuses</option>{statuses.map((status) => <option value={status} key={status}>{statusLabel(status)}</option>)}
       </select>
       <select aria-label="Filter category" className="field" value={filters.category} onChange={(event) => setFilters({ ...filters, category: event.target.value })}>
-        <option value="">All categories</option>{categories.map((category) => <option key={category}>{category}</option>)}
+        <option value="">All categories</option>{(data?.categories || []).map((category) => <option value={category} key={category}>{category}</option>)}
       </select>
-      <input aria-label="Filter country" className="field" placeholder="Country" value={filters.country} onChange={(event) => setFilters({ ...filters, country: event.target.value })} />
+      <select aria-label="Filter country" className="field" value={filters.country} onChange={(event) => setFilters({ ...filters, country: event.target.value })}><option value="">All countries</option>{(data?.countries || []).map((country) => <option value={country} key={country}>{country}</option>)}</select>
+      <select aria-label="Sort leads" className="field" value={filters.sort} onChange={(event) => setFilters({ ...filters, sort: event.target.value })}><option value="-submittedAt">Newest first</option><option value="submittedAt">Oldest first</option><option value="country">Country A–Z</option><option value="-country">Country Z–A</option><option value="creatorCategory">Category A–Z</option><option value="-creatorCategory">Category Z–A</option></select>
       <label className="lead-date-field"><span>From</span><input aria-label="From date" type="date" className="field" value={filters.dateFrom} onChange={(event) => setFilters({ ...filters, dateFrom: event.target.value })} /></label>
       <label className="lead-date-field"><span>To</span><input aria-label="To date" type="date" className="field" value={filters.dateTo} onChange={(event) => setFilters({ ...filters, dateTo: event.target.value })} /></label>
-      <div className="lead-filter-actions">
-        <button className="btn btn-primary"><Search size={17} /> <span>Apply filters</span></button>
-        <button type="button" onClick={clearFilters} className="btn btn-secondary"><X size={17} /> <span>Clear</span></button>
-      </div>
+      <button type="button" onClick={clearFilters} className="btn btn-secondary lead-clear-filter"><X size={16} /> <span>Clear filters</span></button>
+
     </form>
   );
 
@@ -101,8 +103,8 @@ export default function Leads() {
               <div className="lead-desktop-table"><table className="w-full min-w-[1160px] text-left text-sm">
                 <thead className="border-b border-white/[.07] text-xs uppercase tracking-wider text-white/35"><tr>{['Creator', 'Contact', 'Category', 'Country', 'Audience', 'Referral', 'Status', 'Submitted', 'Actions'].map((heading) => <th className="p-4" key={heading}>{heading}</th>)}</tr></thead>
                 <tbody>{data.leads.map((lead) => <tr className="border-b border-white/[.04] hover:bg-white/[.015]" key={lead._id}>
-                  <td className="p-4 font-medium">{lead.fullName}</td><td className="p-4"><p>{lead.email}</p><p className="text-xs text-white/35">{lead.phone || '—'}</p></td>
-                  <td className="p-4 text-white/55">{lead.creatorCategory}</td><td className="p-4 text-white/55">{lead.country}</td><td className="p-4 text-white/55">{lead.audienceSize || '—'}</td>
+                  <td className="p-4 font-medium">{original(lead, 'fullName')}</td><td className="p-4"><p>{original(lead, 'email')}</p><p className="text-xs text-white/35">{original(lead, 'phone') || '—'}</p></td>
+                  <td className="p-4 text-white/55">{leadCategories(lead).join(', ')}</td><td className="p-4 text-white/55">{original(lead, 'country')}</td><td className="p-4 text-white/55">{lead.audienceSize || '—'}</td>
                   <td className="p-4">{lead.referredBy ? <Link to={`/admin/leads/${lead.referredBy._id}`} className="text-ice hover:underline">{lead.referredBy.fullName}<span className="mt-1 block text-xs text-white/35">Referred</span></Link> : <span className="text-white/35">Direct</span>}</td>
                   <td className="p-4"><StatusSelect lead={lead} changeStatus={changeStatus} /></td><td className="p-4 text-white/45">{new Date(lead.submittedAt).toLocaleDateString()}</td>
                   <td className="p-4"><LeadActions lead={lead} remove={remove} /></td>
@@ -115,16 +117,16 @@ export default function Leads() {
 }
 
 function StatusSelect({ lead, changeStatus }) {
-  return <select aria-label={`Change ${lead.fullName} status`} value={lead.status} onChange={(event) => changeStatus(lead._id, event.target.value)} className="lead-status-select">{statuses.map((status) => <option value={status} key={status}>{statusLabel(status)}</option>)}</select>;
+  return <select aria-label={`Change ${original(lead, 'fullName')} status`} value={lead.status} onChange={(event) => changeStatus(lead._id, event.target.value)} className="lead-status-select">{statuses.map((status) => <option value={status} key={status}>{statusLabel(status)}</option>)}</select>;
 }
 function LeadActions({ lead, remove }) {
   return <div className="lead-actions"><Link to={`/admin/leads/${lead._id}`} title="View details"><Eye size={17} /></Link><button onClick={() => remove(lead)} title="Delete lead"><Trash2 size={17} /></button></div>;
 }
 function LeadCard({ lead, changeStatus, remove }) {
   return <article className="lead-mobile-card">
-    <div className="lead-card-top"><div><h2>{lead.fullName}</h2><p>{new Date(lead.submittedAt).toLocaleDateString()}</p></div><StatusSelect lead={lead} changeStatus={changeStatus} /></div>
-    <div className="lead-card-contact"><a href={`mailto:${lead.email}`}>{lead.email}</a><span>{lead.phone || 'No phone'}</span></div>
-    <dl><div><dt>Category</dt><dd>{lead.creatorCategory}</dd></div><div><dt>Location</dt><dd>{lead.country || '—'}</dd></div><div><dt>Audience</dt><dd>{lead.audienceSize || '—'}</dd></div><div><dt>Source</dt><dd>{lead.referredBy ? 'Referred' : 'Direct'}</dd></div></dl>
+    <div className="lead-card-top"><div><h2>{original(lead, 'fullName')}</h2><p>{new Date(lead.submittedAt).toLocaleDateString()}</p></div><StatusSelect lead={lead} changeStatus={changeStatus} /></div>
+    <div className="lead-card-contact"><a href={`mailto:${original(lead, 'email')}`}>{original(lead, 'email')}</a><span>{original(lead, 'phone') || 'No phone'}</span></div>
+    <dl><div><dt>Category</dt><dd>{leadCategories(lead).join(', ')}</dd></div><div><dt>Location</dt><dd>{original(lead, 'country') || '—'}</dd></div><div><dt>Audience</dt><dd>{lead.audienceSize || '—'}</dd></div><div><dt>Source</dt><dd>{lead.referredBy ? 'Referred' : 'Direct'}</dd></div></dl>
     <LeadActions lead={lead} remove={remove} />
   </article>;
 }

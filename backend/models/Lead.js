@@ -16,6 +16,17 @@ const leadSchema = new mongoose.Schema({
   socialProfileUrl: { type: String, trim: true, maxlength: 500, default: '' },
   audienceSize: { type: String, enum: [...AUDIENCE_SIZES, ''], default: '' },
   creatorDescription: { type: String, trim: true, maxlength: 1000, default: '' },
+  originalAnswers: {
+    fullName: { type: String, maxlength: 120, default: '' },
+    email: { type: String, maxlength: 190, default: '' },
+    phone: { type: String, maxlength: 40, default: '' },
+    country: { type: String, maxlength: 100, default: '' },
+    city: { type: String, maxlength: 100, default: '' },
+    instagram: { type: String, maxlength: 80, default: '' },
+    tiktok: { type: String, maxlength: 80, default: '' },
+    socialProfileUrl: { type: String, maxlength: 500, default: '' },
+    creatorDescription: { type: String, maxlength: 1000, default: '' },
+  },
   consentGiven: { type: Boolean, required: true, default: false },
   consentAt: { type: Date, default: null },
   ref: { type: String, trim: true, maxlength: 120, default: '' },
@@ -37,5 +48,8 @@ const leadSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 leadSchema.index({ creatorCategory: 1 });
-leadSchema.index({ fullName: 'text', email: 'text', instagram: 'text', tiktok: 'text' });
+leadSchema.index(
+  { fullName: 'text', email: 'text', instagram: 'text', tiktok: 'text' },
+  { language_override: 'searchLanguage' },
+);
 export default mongoose.model('Lead', leadSchema);

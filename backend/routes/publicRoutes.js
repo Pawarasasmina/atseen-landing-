@@ -5,12 +5,18 @@ import { validate } from '../middleware/validate.js';
 import { AUDIENCE_SIZES, CATEGORIES } from '../utils/constants.js';
 
 const router = Router();
+const captureOriginalAnswers = (req, _res, next) => {
+  req.originalApplicationBody = { ...req.body };
+  next();
+};
 
 const applyValidation = [
   body('name').trim().isLength({ min: 2, max: 120 }).withMessage('Enter your name.'),
   body('email').trim().isEmail().normalizeEmail().isLength({ max: 190 }).withMessage('Enter a valid email address.'),
   body('city').optional({ checkFalsy: true }).trim().isLength({ max: 100 }),
+  body('country').optional({ checkFalsy: true }).trim().isLength({ max: 100 }),
   body('language').optional().isIn(['en', 'ar', 'ru', 'es', 'fr', 'pt']),
+  body('originalAnswers').optional().isObject(),
   body('niches').optional().isArray({ max: 12 }).withMessage('Choose valid niches.'),
   body('niches.*').optional().isIn(CATEGORIES).withMessage('Choose valid niches.'),
   body('instagram').optional({ checkFalsy: true }).trim().isLength({ max: 80 }),
@@ -35,14 +41,16 @@ const applyValidation = [
 ];
 
 router.get('/count', getApplicationCount);
-router.post('/apply', applyValidation, validate, createApplication);
+router.post('/apply', captureOriginalAnswers, applyValidation, validate, createApplication);
 router.post('/leads', [
   body('fullName').trim().isLength({ min: 2, max: 120 }).withMessage('Enter your full name.'),
   body('email').trim().isEmail().normalizeEmail().isLength({ max: 190 }).withMessage('Enter a valid email address.'),
   body('phone').optional({ checkFalsy: true }).trim().isLength({ max: 40 }),
   body('country').optional({ checkFalsy: true }).trim().isLength({ max: 100 }),
   body('city').optional({ checkFalsy: true }).trim().isLength({ max: 100 }),
+  body('country').optional({ checkFalsy: true }).trim().isLength({ max: 100 }),
   body('language').optional().isIn(['en', 'ar', 'ru', 'es', 'fr', 'pt']),
+  body('originalAnswers').optional().isObject(),
   body('creatorCategory').isIn(CATEGORIES).withMessage('Choose a creator category.'),
   body('mainSocialPlatform').optional({ checkFalsy: true }).trim().isLength({ max: 80 }),
   body('socialProfileUrl').optional({ checkFalsy: true }).trim().isLength({ max: 500 }),

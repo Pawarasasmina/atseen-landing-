@@ -33,7 +33,7 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 const leadLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false, message: { success: false, message: 'Please wait a little before trying again.' } });
-const applicationLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: 'draft-7', legacyHeaders: false, message: { success: false, message: 'You can submit up to 3 applications per hour. Please try again later.' } });
+const applicationLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 17, standardHeaders: 'draft-7', legacyHeaders: false, message: { success: false, message: 'You can submit up to 3 applications per hour. Please try again later.' } });
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5, skipSuccessfulRequests: true, standardHeaders: 'draft-7', legacyHeaders: false, message: { success: false, message: 'Too many login attempts. Please try again later.' } });
 app.get('/api/health', (_req, res) => res.json({ success: true, status: 'ok', timestamp: new Date().toISOString() }));
 app.post('/api/leads', leadLimiter);

@@ -16,6 +16,7 @@ const defaults = {
   email: '',
   phone: '',
   phoneRegion: '+971',
+  country: 'United Arab Emirates',
   website: '',
 };
 
@@ -51,8 +52,14 @@ export default function CreatorForm({ onOpenLegal }) {
   const { language, t } = useLanguage();
   const phoneRegions = useMemo(() => {
     const regionNames = new Intl.DisplayNames([language], { type: 'region' });
+    const canonicalRegionNames = new Intl.DisplayNames(['en'], { type: 'region' });
     return getCountries()
-      .map((country) => ({ country, name: regionNames.of(country), code: `+${getCountryCallingCode(country)}` }))
+      .map((country) => ({
+        country,
+        name: regionNames.of(country),
+        canonicalName: canonicalRegionNames.of(country),
+        code: `+${getCountryCallingCode(country)}`,
+      }))
       .sort((a, b) => a.name.localeCompare(b.name, language));
   }, [language]);
   const [form, setForm] = useState(defaults);
@@ -138,6 +145,15 @@ export default function CreatorForm({ onOpenLegal }) {
       const { phoneRegion, ...application } = form;
       const { data } = await api.post('/apply', {
         ...application,
+        originalAnswers: {
+          name: form.name,
+          email: form.email,
+          phone: application.phone.trim() ? [phoneRegion, application.phone].join(' ') : '',
+          country: form.country,
+          city: form.city,
+          instagram: form.instagram,
+          tiktok: form.tiktok,
+        },
         language,
         phone: application.phone.trim() ? [phoneRegion, application.phone.trim()].join(' ') : '',
         instagram: normalizeHandle(form.instagram),
@@ -205,7 +221,7 @@ export default function CreatorForm({ onOpenLegal }) {
       <Field label="TikTok"><input className="field" value={form.tiktok} onFocus={() => startSocialHandle('tiktok')} onChange={(event) => setSocialValue('tiktok', event.target.value)} placeholder="@yourhandle" /></Field>
       <Field label="Audience"><div className="audience-select"><select className="field" value={form.audience} onChange={(event) => setValue('audience', event.target.value)}>{audiences.map((audience) => <option key={audience}>{audience}</option>)}</select><ChevronDown size={17} aria-hidden="true" /></div></Field>
       <Field label="Email" error={errors.email}><input className="field" type="email" required value={form.email} onChange={(event) => setValue('email', event.target.value)} placeholder="you@example.com" /></Field>
-            <Field label="Phone" className="phone-app-field"><div className="phone-field"><div className="phone-region-wrap"><button type="button" className="phone-region-trigger" aria-label="Select phone region" aria-haspopup="listbox" aria-expanded={phonePickerOpen} onClick={() => setPhonePickerOpen((open) => !open)}>{form.phoneRegion}<ChevronDown size={14} /></button>{phonePickerOpen && <div className="phone-region-menu" role="listbox">{phoneRegions.map(({ country, name, code }) => <button key={country} type="button" role="option" aria-selected={form.phoneRegion === code} onClick={() => { setValue('phoneRegion', code); setPhonePickerOpen(false); }}><span>{name}</span><span>{code}</span></button>)}</div>}</div><input className="field" inputMode="tel" autoComplete="tel-national" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Mobile number" /></div></Field>
+            <Field label="Phone" className="phone-app-field"><div className="phone-field"><div className="phone-region-wrap"><button type="button" className="phone-region-trigger" aria-label="Select phone region" aria-haspopup="listbox" aria-expanded={phonePickerOpen} onClick={() => setPhonePickerOpen((open) => !open)}>{form.phoneRegion}<ChevronDown size={14} /></button>{phonePickerOpen && <div className="phone-region-menu" role="listbox">{phoneRegions.map(({ country, name, canonicalName, code }) => <button key={country} type="button" role="option" aria-selected={form.country === canonicalName} onClick={() => { setForm((current) => ({ ...current, phoneRegion: code, country: canonicalName })); setPhonePickerOpen(false); }}><span>{name}</span><span>{code}</span></button>)}</div>}</div><input className="field" inputMode="tel" autoComplete="tel-national" value={form.phone} onChange={(event) => setValue('phone', event.target.value)} placeholder="Mobile number" /></div></Field>
       <div className="consent-field md:col-span-2">
         <label>
           <input type="checkbox" checked={consentGiven} onChange={(event) => { setConsentGiven(event.target.checked); setErrors((current) => ({ ...current, consent: undefined })); }} required />
