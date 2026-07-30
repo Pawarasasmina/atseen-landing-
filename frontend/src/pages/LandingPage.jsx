@@ -261,9 +261,11 @@ export default function LandingPage() {
           <div className="founder-quote-glow" aria-hidden="true" />
           <div className="founder-story-inner">
             <Reveal className="founder-story-copy">
-              <div className="quote-signal" aria-hidden="true"><Eye size={21} /><i /><Sparkles size={14} /></div>
-              <blockquote><span><i aria-hidden="true">&ldquo;</i>Followers look. Fans invest.</span><span>We built the place where they can.<i aria-hidden="true">&rdquo;</i></span></blockquote>
-              <p>&mdash; the <BrandName /> founding team</p>
+              <div className="founder-story-message">
+                <div className="quote-signal" aria-hidden="true"><Eye size={21} /><i /><Sparkles size={14} /></div>
+                <blockquote><span><i aria-hidden="true">&ldquo;</i>Followers look. Fans invest.</span><span>We built the place where they can.<i aria-hidden="true">&rdquo;</i></span></blockquote>
+                <p>&mdash; the <BrandName /> founding team</p>
+              </div>
             </Reveal>
             <Reveal className="founder-story-profile"><CompactFoundingProfile /></Reveal>
           </div>
@@ -272,7 +274,7 @@ export default function LandingPage() {
         <section ref={applicationRef} id="apply" className="section-space join-section">
           <div className="mx-auto max-w-6xl px-5">
             <div className="join-shell application-shell"><div className="join-light" />
-              <Reveal className="join-copy"><div className="eyebrow"><span /> The application</div><h2>Join the early-access waitlist</h2><p>We read every application ourselves. Follower count matters less than a World worth stepping into.</p><div className="join-points"><span><Check size={14} /> Confirmation, not approval</span><span><Mail size={14} /> Essential waitlist updates</span></div><div className="join-signal" aria-hidden="true"><span><i /> Founding signal</span><b>Ready in 02:00</b></div><div className="join-preview"><div className="join-preview-head"><span>Founding path</span><b><i /> Live</b></div><div className="join-preview-steps"><span><b>01</b> Apply</span><span><b>02</b> Review</span><span><b>03</b> Updates</span></div><p>Every application gets a personal review.</p></div><div className="join-signoff"><Eye size={23} strokeWidth={1.5} /><div><b><BrandName /></b><span>We’ll meet there soon.</span></div></div></Reveal>
+              <Reveal className="join-copy"><div className="eyebrow"><span /> The application</div><h2>Join the early-access waitlist</h2><p>We read every application ourselves. Follower count matters less than a World worth stepping into.</p><div className="join-points"><span><Check size={14} /> Confirmation, not approval</span><span><Mail size={14} /> Essential waitlist updates</span></div><div className="join-signal" aria-hidden="true"><span><i /> Founding signal</span><b>Ready in 02:00</b></div><div className="join-preview"><div className="join-preview-head"><span>Founding path</span><b><i /> Live</b></div><div className="join-preview-steps"><span><b>01</b> Apply</span><span><b>02</b> Review</span><span><b>03</b> Updates</span></div><p>Every application gets a personal review.</p></div><div className="join-signoff"><Eye size={23} strokeWidth={1.5} /><div><b><BrandName /></b><span>We&apos;ll meet there soon.</span></div></div></Reveal>
               <Reveal className="join-form"><CreatorForm onOpenLegal={setLegal} /></Reveal>
             </div>
           </div>
@@ -298,7 +300,7 @@ export default function LandingPage() {
             <a href="https://t.me/atseen" target="_blank" rel="noreferrer"><Send size={15} /> Telegram</a>
           </div>
           <div className="footer-emails"><a href="mailto:creators@atseen.com">creators@atseen.com</a><span>·</span><a href="mailto:hello@atseen.com">hello@atseen.com</a></div>
-          <p><BrandName /> · We see you. Every day.</p>
+          <p><BrandName /> · we see you every day.</p>
           <div className="footer-legal"><button onClick={() => setLegal('Privacy Notice')}>Privacy Notice</button><span>·</span><button onClick={() => setLegal('Early Access Terms')}>Early Access Terms</button><span>·</span><a href="mailto:privacy@atseen.com">Contact</a></div>
         </div>
       </footer>

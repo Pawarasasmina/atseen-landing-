@@ -2098,7 +2098,11 @@ html:not([lang="en"]) .founder-story-copy blockquote { font-size: clamp(.95rem, 
   .founder-story-inner { grid-template-columns: minmax(0, 1fr) 132px; gap: .3rem; min-height: 270px; padding: 1.4rem 0; }
   .founder-story-copy .quote-signal { margin-bottom: .45rem; transform: scale(.72); transform-origin: left center; }
   .founder-story-copy blockquote { font-size: clamp(.62rem, 2.8vw, .88rem); line-height: 1.38; }
-  html:not([lang="en"]) .founder-story-copy blockquote { font-size: clamp(.48rem, 2.05vw, .74rem); }
+  html:not([lang="en"]) .founder-story-copy blockquote {
+    font-size: clamp(.46rem, 2.5vw, .9rem);
+    letter-spacing: -.055em;
+    line-height: 1.45;
+  }
   .founder-story-copy p { margin-top: .5rem; font-size: .56rem; }
   .founder-profile-stage { width: 132px; height: 230px; transform: translate(-145px, -28px); }
   .founder-profile-stage .founding-profile-wrap { transform: scale(.42); transform-origin: center; }
@@ -2113,14 +2117,15 @@ html:not([lang="en"]) .founder-story-copy blockquote { font-size: clamp(.95rem, 
 /* Stable mobile placement for the founding story. */
 @media (max-width: 700px) {
   .founder-story-inner { position: relative; display: block; min-height: 280px; }
-  .founder-story-copy { position: absolute; inset: 0 0 0 auto; display: flex; width: 61%; flex-direction: column; justify-content: center; }
-  .founder-story-profile { position: absolute; inset: 0 auto 0 0; display: grid; width: 37%; place-items: center; }
+  .founder-story-copy { position: absolute; inset: 0 0 0 auto; display: flex; width: 66%; flex-direction: column; justify-content: center; }
+  .founder-story-message { width: max-content; max-width: 100%; margin-right: 3%; margin-left: auto; }
+  .founder-story-profile { position: absolute; inset: 0 auto 0 0; display: grid; width: 32%; place-items: center; }
   .founder-profile-stage { position: relative; width: 132px; min-width: 0; max-width: 132px; height: 230px; transform: none; }
   .founder-profile-stage .founding-profile-wrap { position: absolute; top: 50%; left: 50%; width: 304px; transform: translate(-50%, -50%) scale(.38); transform-origin: center; }
 }
 @media (max-width: 370px) {
-  .founder-story-copy { width: 61%; }
-  .founder-story-profile { width: 37%; }
+  .founder-story-copy { width: 66%; }
+  .founder-story-profile { width: 32%; }
   .founder-profile-stage { width: 118px; max-width: 118px; transform: none; }
   .founder-profile-stage .founding-profile-wrap { transform: translate(-50%, -50%) scale(.34); }
 }

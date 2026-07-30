@@ -7,6 +7,7 @@ const leadSchema = new mongoose.Schema({
   phone: { type: String, trim: true, maxlength: 40, default: '' },
   country: { type: String, trim: true, maxlength: 100, default: '' },
   city: { type: String, trim: true, maxlength: 100, default: '' },
+  language: { type: String, enum: ['en', 'ar', 'ru', 'es', 'fr', 'pt'], default: 'en' },
   creatorCategory: { type: String, enum: CATEGORIES, default: 'Content' },
   niches: { type: [String], default: [], validate: { validator: (items) => items.every((item) => CATEGORIES.includes(item)), message: 'Choose valid creator niches' } },
   instagram: { type: String, trim: true, maxlength: 80, default: '' },

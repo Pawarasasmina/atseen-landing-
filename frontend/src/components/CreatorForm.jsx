@@ -5,6 +5,7 @@ import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import api from '../lib/api';
 import { audiences, categories } from '../constants';
 import { BrandName, BrandText } from './BrandName';
+import { useLanguage } from '../context/LanguageContext';
 
 const defaults = {
   name: '',
@@ -19,10 +20,7 @@ const defaults = {
 };
 
 const trackedParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
-const phoneRegions = getCountries()
-  .map((country) => ({ country, name: regionNames.of(country), code: `+${getCountryCallingCode(country)}` }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+
 
 function normalizeHandle(value) {
   return value.trim().replace(/^@+/, '');
@@ -50,6 +48,13 @@ function Field({ label, error, children, className = '' }) {
 }
 
 export default function CreatorForm({ onOpenLegal }) {
+  const { language, t } = useLanguage();
+  const phoneRegions = useMemo(() => {
+    const regionNames = new Intl.DisplayNames([language], { type: 'region' });
+    return getCountries()
+      .map((country) => ({ country, name: regionNames.of(country), code: `+${getCountryCallingCode(country)}` }))
+      .sort((a, b) => a.name.localeCompare(b.name, language));
+  }, [language]);
   const [form, setForm] = useState(defaults);
   const [niches, setNiches] = useState(['Content']);
   const [errors, setErrors] = useState({});
@@ -58,7 +63,7 @@ export default function CreatorForm({ onOpenLegal }) {
   const [consentGiven, setConsentGiven] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [phonePickerOpen, setPhonePickerOpen] = useState(false);
-  const [shareHint, setShareHint] = useState('Send this page to someone who deserves to be first.');
+  const [shareHint, setShareHint] = useState(() => t('Send this page to someone who deserves to be first.'));
 
   useEffect(() => {
     document.body.classList.toggle('application-submitted', sent);
@@ -89,25 +94,25 @@ export default function CreatorForm({ onOpenLegal }) {
 
   const shareInvite = async () => {
     const url = `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(inviteCode)}`;
-    const text = 'I joined the @Seen early-access waitlist. You can apply too:';
+    const text = t('I joined the @Seen early-access waitlist. You can apply too:');
     try {
       if (navigator.share) await navigator.share({ title: '@Seen Early Access', text, url });
       else {
         await navigator.clipboard.writeText(`${text} ${url}`);
-        setShareHint('Personal invite link copied.');
+        setShareHint(t('Personal invite link copied.'));
       }
     } catch {
-      setShareHint('Your personal invite link is ready when you are.');
+      setShareHint(t('Your personal invite link is ready when you are.'));
     }
   };
 
   const validate = () => {
     const next = {};
-    if (form.name.trim().length < 2) next.name = 'Enter your name.';
-    if (!form.email.trim()) next.email = 'Email is required.';
-    else if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) next.email = 'Enter a valid email.';
-    if (!normalizeHandle(form.instagram) && !normalizeHandle(form.tiktok)) next.instagram = 'Add Instagram or TikTok.';
-    if (!consentGiven) next.consent = 'You must confirm your age and agreement before applying.';
+    if (form.name.trim().length < 2) next.name = t('Enter your name.');
+    if (!form.email.trim()) next.email = t('Email is required.');
+    else if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) next.email = t('Enter a valid email.');
+    if (!normalizeHandle(form.instagram) && !normalizeHandle(form.tiktok)) next.instagram = t('Add Instagram or TikTok.');
+    if (!consentGiven) next.consent = t('You must confirm your age and agreement before applying.');
     setErrors(next);
     return next;
   };
@@ -118,11 +123,11 @@ export default function CreatorForm({ onOpenLegal }) {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       if (validationErrors.consent && Object.keys(validationErrors).length === 1) {
-        toast.error('Please confirm your age and agreement before applying.');
+        toast.error(t('Please confirm your age and agreement before applying.'));
       } else if (validationErrors.instagram) {
-        toast.error('Please add at least one Instagram or TikTok handle.');
+        toast.error(t('Please add at least one Instagram or TikTok handle.'));
       } else {
-        toast.error('Please check the highlighted fields.');
+        toast.error(t('Please check the highlighted fields.'));
       }
       return;
     }
@@ -133,6 +138,7 @@ export default function CreatorForm({ onOpenLegal }) {
       const { phoneRegion, ...application } = form;
       const { data } = await api.post('/apply', {
         ...application,
+        language,
         phone: application.phone.trim() ? [phoneRegion, application.phone.trim()].join(' ') : '',
         instagram: normalizeHandle(form.instagram),
         tiktok: normalizeHandle(form.tiktok),
@@ -145,11 +151,11 @@ export default function CreatorForm({ onOpenLegal }) {
       setReferralCode(data.referralCode || '');
       window.dispatchEvent(new Event('application-count-refresh')); 
       setSent(true);
-      toast.success("You've been seen.");
+      toast.success(t("You've been seen."));
     } catch (error) {
       const fields = error.response?.data?.errors;
       if (fields?.length) setErrors(Object.fromEntries(fields.map(({ field, message }) => [field, message])));
-      toast.error(error.response?.data?.message || 'We could not send your application. Please try again.');
+      toast.error(error.response?.data?.message || t('We could not send your application. Please try again.'));
     } finally {
       setBusy(false);
     }
