@@ -201,20 +201,23 @@ export default function LandingPage() {
   const [showFloatingApply, setShowFloatingApply] = useState(false);
   const heroApplyRef = useRef(null);
   const applicationRef = useRef(null);
+  const footerRef = useRef(null);
   const count = useApplicationCount();
 
   useEffect(() => {
-    const visibility = { hero: true, application: false };
+    const visibility = { hero: true, application: false, footer: false };
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.target === heroApplyRef.current) visibility.hero = entry.isIntersecting;
         if (entry.target === applicationRef.current) visibility.application = entry.isIntersecting;
+        if (entry.target === footerRef.current) visibility.footer = entry.isIntersecting;
       });
-      setShowFloatingApply(!visibility.hero && !visibility.application);
+      setShowFloatingApply(!visibility.hero && !visibility.application && !visibility.footer);
     }, { threshold: .12 });
 
     if (heroApplyRef.current) observer.observe(heroApplyRef.current);
     if (applicationRef.current) observer.observe(applicationRef.current);
+    if (footerRef.current) observer.observe(footerRef.current);
     return () => observer.disconnect();
   }, []);
 
@@ -263,7 +266,7 @@ export default function LandingPage() {
           transition={{ duration: .22 }}
         >Apply now <Sparkles size={14} /></motion.a>}
       </AnimatePresence>
-      <footer className="site-footer">
+      <footer ref={footerRef} className="site-footer">
         <div className="footer-stars" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
         <div className="site-footer-inner">
           <Brand />

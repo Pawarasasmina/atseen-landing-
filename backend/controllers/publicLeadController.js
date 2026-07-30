@@ -168,12 +168,12 @@ function publicBaseUrl(req) {
 function emailLogo() {
   return `<span style="font-family:Arial,Helvetica,sans-serif;font-size:25px;line-height:1;font-weight:700;letter-spacing:-1px;color:#F7FAFF;-webkit-text-fill-color:#F7FAFF;"><span style="color:#9CCBFF;-webkit-text-fill-color:#9CCBFF;">@</span>seen</span>`;
 }
-async function sendEmail({ to, subject, html }) {
+async function sendEmail({ to, subject, html, attachments = [] }) {
   if (!process.env.RESEND_API_KEY) return;
   const response = await fetch(resendEndpoint, {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: process.env.MAIL_FROM || 'hello@atseen.com', to, subject, html }),
+    body: JSON.stringify({ from: process.env.MAIL_FROM || 'hello@atseen.com', to, subject, html, ...(attachments.length ? { attachments } : {}) }),
   });
   if (!response.ok) throw new Error(`Resend email failed with ${response.status}`);
 }
@@ -187,7 +187,7 @@ function notificationEmail(payload, req) {
 export function confirmationEmail(payload, req) {
   const baseUrl = publicBaseUrl(req);
   const shareUrl = `${baseUrl}/share?ref=${encodeURIComponent(payload.referralCode)}`;
-  const eyeUrl = `${baseUrl}/images/seen-eye.png`;
+  const eyeUrl = 'cid:seen-eye-logo';
   const language = confirmationEmailCopy[payload.language] ? payload.language : 'en';
   const copy = getConfirmationEmailCopy(language);
   const isRtl = language === 'ar';
@@ -209,7 +209,7 @@ export function confirmationEmail(payload, req) {
         <tr><td style="padding:0 6px 24px;">${emailLogo(baseUrl)}</td><td align="${headerAlign}" style="padding:0 6px 24px;color:#728196;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;-webkit-text-fill-color:#728196;">${escapeHtml(copy.circle)}</td></tr>
         <tr><td class="seen-card" bgcolor="#0E151F" colspan="2" style="overflow:hidden;border:1px solid #29384B;border-radius:24px;background-color:#0E151F;background-image:linear-gradient(#0E151F,#0E151F);"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
           <tr><td style="height:5px;background:#9CCBFF;font-size:0;line-height:0;">&nbsp;</td></tr>
-          <tr><td class="seen-content" style="padding:42px 38px 16px;text-align:${textAlign};"><div style="display:inline-block;border:1px solid #34516F;border-radius:999px;background:#142538;padding:7px 12px;color:#B9DCFF;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;">${escapeHtml(copy.badge)}</div><h1 class="seen-title seen-white" style="margin:22px 0 14px;color:#FFFFFF!important;font-family:Arial,Helvetica,sans-serif;font-size:32px;line-height:1.15;letter-spacing:-0.8px;-webkit-text-fill-color:#FFFFFF!important;mso-color-alt:#FFFFFF;"><span class="gmail-blend-screen"><span class="gmail-blend-difference"><font class="seen-text-fix" color="#FFFFFF" style="color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;text-shadow:0 0 0 #FFFFFF!important;mso-color-alt:#FFFFFF!important;">${escapeHtml(copy.title)}</font></span></span> <img src="${escapeHtml(eyeUrl)}" width="32" height="20" alt="" style="display:inline-block;width:32px;height:20px;border:0;vertical-align:middle;"></h1><p class="seen-white" style="margin:0;color:#FFFFFF!important;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;-webkit-text-fill-color:#FFFFFF!important;mso-color-alt:#FFFFFF;"><span class="gmail-blend-screen gmail-blend-block"><span class="gmail-blend-difference gmail-blend-block"><font class="seen-text-fix" color="#FFFFFF" style="color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;text-shadow:0 0 0 #FFFFFF!important;mso-color-alt:#FFFFFF!important;">${greeting}</font></span></span></p></td></tr>
+          <tr><td class="seen-content" style="padding:42px 38px 16px;text-align:${textAlign};"><div style="display:inline-block;border:1px solid #34516F;border-radius:999px;background:#142538;padding:7px 12px;color:#B9DCFF;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;">${escapeHtml(copy.badge)}</div><h1 class="seen-title seen-white" style="margin:22px 0 14px;color:#FFFFFF!important;font-family:Arial,Helvetica,sans-serif;font-size:32px;line-height:1.15;letter-spacing:-0.8px;-webkit-text-fill-color:#FFFFFF!important;mso-color-alt:#FFFFFF;"><span class="gmail-blend-screen"><span class="gmail-blend-difference"><font class="seen-text-fix" color="#FFFFFF" style="color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;text-shadow:0 0 0 #FFFFFF!important;mso-color-alt:#FFFFFF!important;">${escapeHtml(copy.title)}</font></span></span> <img src="${escapeHtml(eyeUrl)}" width="32" height="20" alt="@seen" style="display:inline-block;width:32px;height:20px;border:0;vertical-align:middle;"></h1><p class="seen-white" style="margin:0;color:#FFFFFF!important;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;-webkit-text-fill-color:#FFFFFF!important;mso-color-alt:#FFFFFF;"><span class="gmail-blend-screen gmail-blend-block"><span class="gmail-blend-difference gmail-blend-block"><font class="seen-text-fix" color="#FFFFFF" style="color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;text-shadow:0 0 0 #FFFFFF!important;mso-color-alt:#FFFFFF!important;">${greeting}</font></span></span></p></td></tr>
           <tr><td style="padding:20px 38px 8px;"><table role="presentation" class="seen-panel" bgcolor="#0A1018" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #243345;border-radius:16px;background-color:#0A1018;background-image:linear-gradient(#0A1018,#0A1018);"><tr><td width="44" rowspan="2" style="padding:18px 0 18px 18px;color:#9CCBFF;font-family:Arial,Helvetica,sans-serif;font-size:24px;vertical-align:top;">&#10003;</td><td class="seen-notice-primary" style="padding:18px 18px 0;color:#C8D3E0!important;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:300;line-height:1.55;text-align:${textAlign};-webkit-text-fill-color:#C8D3E0!important;mso-color-alt:#C8D3E0;">${noticePrimary}</td></tr><tr><td class="seen-notice-secondary" style="padding:10px 18px 18px;color:#C8D3E0!important;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:300;line-height:1.55;text-align:${textAlign};-webkit-text-fill-color:#C8D3E0!important;mso-color-alt:#C8D3E0;">${noticeSecondary}</td></tr></table></td></tr>
           <tr><td align="center" style="padding:25px 38px 12px;"><a class="seen-button" href="${escapeHtml(shareUrl)}" style="display:inline-block;border-radius:999px;background-color:#B9DCFF;background-image:linear-gradient(#B9DCFF,#B9DCFF);padding:15px 25px;color:#07101A;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:800;text-decoration:none;-webkit-text-fill-color:#07101A;">${escapeHtml(copy.cta)} &nbsp;${arrow}</a></td></tr>
           <tr><td align="center" style="padding:0 38px 36px;color:#738196;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;">${escapeHtml(copy.helperOne)}<br>${escapeHtml(copy.helperTwo)}</td></tr>
@@ -223,7 +223,16 @@ export function confirmationEmail(payload, req) {
 async function notifyApplication(payload, req) {
   await Promise.allSettled([
     sendEmail({ to: process.env.CREATORS_NOTIFY_EMAIL || 'creators@atseen.com', subject: `New @seen creator application: ${payload.fullName}`, html: notificationEmail(payload, req) }),
-    sendEmail({ to: payload.email, subject: getConfirmationEmailCopy(payload.language).subject, html: confirmationEmail(payload, req) }),
+    sendEmail({
+      to: payload.email,
+      subject: getConfirmationEmailCopy(payload.language).subject,
+      html: confirmationEmail(payload, req),
+      attachments: [{
+        path: (process.env.PUBLIC_ASSET_URL || process.env.CLIENT_URL?.split(',')[0] || 'https://atseen.com').replace(/\/$/, '') + '/images/seen-eye.png',
+        filename: 'seen-eye.png',
+        content_id: 'seen-eye-logo',
+      }],
+    }),
   ]);
 }
 
