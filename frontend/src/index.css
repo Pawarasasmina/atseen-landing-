@@ -2463,3 +2463,27 @@ iframe.skiptranslate { display: none !important; visibility: hidden !important; 
   .discovery-steps { margin-top: 22px; }
   .discovery-steps > div { padding: 11px; }
 }
+/* Centered founder-card composition */
+.discovery-founder-layout { display: grid; grid-template-columns: 1fr; grid-template-rows: 245px auto; min-height: 420px; align-content: center; justify-items: center; gap: 8px; }
+.discovery-founder-profile { position: relative; isolation: isolate; display: grid; width: 100%; height: 245px; place-items: center; }
+.discovery-founder-profile::before { position: absolute; z-index: -2; top: 50%; left: 50%; width: 300px; height: 190px; border-radius: 50%; background: radial-gradient(ellipse, rgba(103,174,247,.24), rgba(64,123,188,.1) 38%, transparent 72%); content: ''; filter: blur(12px); transform: translate(-50%, -50%); }
+.discovery-founder-profile::after { position: absolute; z-index: -1; top: -30px; left: 50%; width: 110px; height: 290px; background: linear-gradient(180deg, transparent, rgba(151,207,255,.15), transparent); content: ''; filter: blur(18px); transform: translateX(-50%) rotate(7deg); }
+.discovery-founder .founder-profile-stage { position: relative; right: auto; bottom: auto; width: 190px; height: 245px; opacity: 1; transform: none; }
+.discovery-founder .founder-profile-stage .founding-profile-wrap { position: absolute; top: 50%; left: 50%; width: 304px; transform: translate(-50%, -50%) scale(.5); transform-origin: center; }
+.discovery-founder .founder-profile-stage::after { width: 220px; height: 58px; }
+.discovery-founder-copy { position: relative; z-index: 2; width: min(100%, 470px); text-align: center; }
+.discovery-founder-copy .quote-signal { justify-content: center; margin: 0 auto; }
+.discovery-founder-copy blockquote { margin-top: 14px; }
+.discovery-founder-copy > p { margin-top: 11px; }
+
+@media (max-width: 767px) {
+  .discovery-founder { min-height: 520px; }
+  .discovery-founder-layout { grid-template-rows: 230px auto; min-height: 440px; gap: 4px; }
+  .discovery-founder-profile { height: 230px; }
+  .discovery-founder-profile::before { width: 260px; height: 170px; }
+  .discovery-founder-profile::after { height: 250px; }
+  .discovery-founder .founder-profile-stage { position: relative; right: auto; bottom: auto; width: 175px; height: 225px; opacity: 1; }
+  .discovery-founder .founder-profile-stage .founding-profile-wrap { transform: translate(-50%, -50%) scale(.46); }
+  .discovery-founder-copy { max-width: 310px; text-align: center; }
+  .discovery-founder-copy blockquote { margin-top: 12px; font-size: 1.3rem; line-height: 1.3; }
+}
