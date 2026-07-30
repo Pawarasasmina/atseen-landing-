@@ -2487,3 +2487,121 @@ iframe.skiptranslate { display: none !important; visibility: hidden !important; 
   .discovery-founder-copy { max-width: 310px; text-align: center; }
   .discovery-founder-copy blockquote { margin-top: 12px; font-size: 1.3rem; line-height: 1.3; }
 }
+.discovery-step-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 .32em; }
+.discovery-step-title small { color: rgba(156,203,255,.42); font-size: .5em; }
+/* Keep each founder quote sentence on exactly one line at every card size */
+.discovery-founder-copy { container-type: inline-size; max-width: 100%; }
+.discovery-founder-copy blockquote { width: 100%; max-width: none; font-size: clamp(.82rem, 5cqw, 1.55rem); line-height: 1.3; letter-spacing: -.045em; }
+.discovery-founder-copy blockquote span { display: block; width: 100%; white-space: nowrap; }
+body[data-language="ar"] .discovery-founder-copy blockquote,
+body[data-language="es"] .discovery-founder-copy blockquote,
+body[data-language="fr"] .discovery-founder-copy blockquote,
+body[data-language="pt"] .discovery-founder-copy blockquote { font-size: clamp(.68rem, 4cqw, 1.2rem); letter-spacing: -.035em; }
+body[data-language="ru"] .discovery-founder-copy blockquote { font-size: clamp(.62rem, 3.6cqw, 1.08rem); letter-spacing: -.035em; }
+@media (max-width: 390px) {
+  .discovery-founder-copy blockquote { font-size: clamp(.76rem, 4.75cqw, 1rem); }
+  body[data-language="ar"] .discovery-founder-copy blockquote,
+  body[data-language="es"] .discovery-founder-copy blockquote,
+  body[data-language="fr"] .discovery-founder-copy blockquote,
+  body[data-language="pt"] .discovery-founder-copy blockquote { font-size: clamp(.62rem, 3.8cqw, .82rem); }
+  body[data-language="ru"] .discovery-founder-copy blockquote { font-size: clamp(.56rem, 3.35cqw, .74rem); }
+}
+/* Unified sizing and rhythm for all four discovery cards */
+.discovery-section { scroll-margin-top: 72px; }
+.discovery-card { display: flex; flex-direction: column; container-type: inline-size; height: clamp(520px, 38vw, 590px); min-height: 0; padding: clamp(26px, 2.5vw, 36px); }
+.discovery-card-top { flex: 0 0 auto; height: 24px; }
+.discovery-kicker { flex: 0 0 auto; margin-top: 24px; }
+.discovery-card h3 { display: block; flex: 0 0 auto; min-height: 3.2em; margin-top: 10px; font-size: clamp(1.55rem, 6cqw, 2.25rem); line-height: 1.08; text-wrap: balance; }
+.discovery-step-title { display: flex !important; align-content: flex-start; min-height: 3.2em; }
+.discovery-steps,
+.discovery-benefit-list,
+.discovery-metrics { flex: 0 0 auto; margin-top: auto; padding-top: 22px; }
+.discovery-promise { flex: 0 0 auto; margin-top: 12px; }
+.discovery-steps > div,
+.discovery-benefit-list > div,
+.discovery-metrics > div { min-width: 0; }
+.discovery-steps p,
+.discovery-benefit-list small,
+.discovery-metrics small { overflow-wrap: anywhere; }
+.discovery-benefit-list { grid-auto-rows: minmax(72px, 1fr); }
+.discovery-metrics { grid-auto-rows: minmax(76px, 1fr); }
+.discovery-founder { justify-content: flex-start; }
+.discovery-founder .discovery-founder-layout { flex: 1 1 auto; width: 100%; min-height: 0; }
+
+body[data-language="ru"] .discovery-heading h2 { max-width: 760px; font-size: clamp(2.2rem, 3.5vw, 3.15rem); }
+body[data-language="ru"] .discovery-card h3 { min-height: 4.25em; font-size: clamp(1.35rem, 4.9cqw, 1.85rem); line-height: 1.12; }
+body[data-language="ar"] .discovery-card h3,
+body[data-language="fr"] .discovery-card h3,
+body[data-language="pt"] .discovery-card h3,
+body[data-language="es"] .discovery-card h3 { min-height: 3.7em; font-size: clamp(1.42rem, 5.3cqw, 2rem); line-height: 1.1; }
+
+@media (min-width: 1500px) {
+  .discovery-track { grid-auto-columns: 580px; }
+}
+
+@media (max-width: 767px) {
+  .discovery-card { height: 520px; min-height: 520px; padding: 22px; }
+  .discovery-card-top { height: 22px; }
+  .discovery-kicker { margin-top: 19px; }
+  .discovery-card h3 { min-height: 3.35em; font-size: clamp(1.35rem, 6.8cqw, 1.72rem); line-height: 1.08; }
+  .discovery-step-title { min-height: 3.35em; }
+  .discovery-steps, .discovery-benefit-list, .discovery-metrics { padding-top: 16px; }
+  .discovery-benefit-list { grid-auto-rows: minmax(70px, 1fr); }
+  .discovery-metrics { grid-auto-rows: minmax(72px, 1fr); }
+  body[data-language="ru"] .discovery-heading h2 { max-width: 300px; font-size: 1.72rem; line-height: 1.05; }
+  body[data-language="ru"] .discovery-card h3 { min-height: 4.35em; font-size: clamp(1.12rem, 5.5cqw, 1.38rem); line-height: 1.12; }
+  body[data-language="ar"] .discovery-card h3,
+  body[data-language="fr"] .discovery-card h3,
+  body[data-language="pt"] .discovery-card h3,
+  body[data-language="es"] .discovery-card h3 { min-height: 3.8em; font-size: clamp(1.18rem, 6cqw, 1.48rem); }
+  .discovery-founder { height: 520px; }
+  .discovery-founder .discovery-founder-layout { grid-template-rows: 220px auto; }
+}
+
+@media (max-width: 390px) {
+  .discovery-card { height: 505px; min-height: 505px; padding: 19px; }
+  .discovery-card h3 { font-size: 1.3rem; }
+  .discovery-steps > div { padding: 10px; }
+  .discovery-benefit-list > div, .discovery-metrics > div { padding: 9px; }
+}
+/* Compact, content-led discovery-card layout */
+.discovery-track { grid-auto-columns: clamp(460px, 46vw, 660px); }
+.discovery-card { height: 510px; min-height: 510px; }
+.discovery-card h3 { min-height: 2.35em; }
+.discovery-step-title { min-height: 2.35em; }
+.discovery-steps,
+.discovery-benefit-list,
+.discovery-metrics { margin-top: 0; padding-top: 24px; }
+body[data-language="ru"] .discovery-card h3 { min-height: 3.3em; }
+body[data-language="ar"] .discovery-card h3,
+body[data-language="fr"] .discovery-card h3,
+body[data-language="pt"] .discovery-card h3,
+body[data-language="es"] .discovery-card h3 { min-height: 2.8em; }
+@media (min-width: 1500px) {
+  .discovery-track { grid-auto-columns: 650px; }
+}
+@media (max-width: 767px) {
+  .discovery-track { grid-auto-columns: min(86vw, 355px); }
+  .discovery-card { height: auto; min-height: 500px; }
+  .discovery-card h3, .discovery-step-title { min-height: 2.8em; }
+  .discovery-steps, .discovery-benefit-list, .discovery-metrics { padding-top: 18px; }
+  body[data-language="ru"] .discovery-card h3 { min-height: 3.7em; }
+  body[data-language="ar"] .discovery-card h3,
+  body[data-language="fr"] .discovery-card h3,
+  body[data-language="pt"] .discovery-card h3,
+  body[data-language="es"] .discovery-card h3 { min-height: 3.2em; }
+}
+/* Compact founding-benefit tiles on mobile */
+@media (max-width: 767px) {
+  .discovery-access .discovery-metrics { grid-auto-rows: 106px; align-items: stretch; }
+  .discovery-access .discovery-metrics > div { height: 106px; min-height: 106px; align-content: start; overflow: hidden; padding: 12px; }
+  .discovery-access .discovery-metrics svg { margin-top: 1px; }
+  .discovery-access .discovery-metrics b { align-self: start; line-height: 1.25; }
+  .discovery-access .discovery-metrics small { display: -webkit-box; align-self: start; margin-top: 5px; overflow: hidden; line-height: 1.35; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+  .discovery-access .discovery-promise { min-height: 70px; align-items: flex-start; padding: 13px; }
+}
+@media (max-width: 390px) {
+  .discovery-access .discovery-metrics { grid-auto-rows: 100px; }
+  .discovery-access .discovery-metrics > div { height: 100px; min-height: 100px; padding: 10px; }
+  .discovery-access .discovery-metrics small { font-size: .58rem; -webkit-line-clamp: 3; }
+}
