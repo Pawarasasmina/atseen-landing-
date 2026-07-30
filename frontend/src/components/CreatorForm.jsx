@@ -73,6 +73,11 @@ export default function CreatorForm({ onOpenLegal }) {
   const [shareHint, setShareHint] = useState(() => t('Send this page to someone who deserves to be first.'));
 
   useEffect(() => {
+    setErrors({});
+    setShareHint(t('Send this page to someone who deserves to be first.'));
+  }, [language, t]);
+
+  useEffect(() => {
     document.body.classList.toggle('application-submitted', sent);
     return () => document.body.classList.remove('application-submitted');
   }, [sent]);

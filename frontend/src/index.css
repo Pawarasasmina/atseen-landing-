@@ -2605,3 +2605,43 @@ body[data-language="es"] .discovery-card h3 { min-height: 2.8em; }
   .discovery-access .discovery-metrics > div { height: 100px; min-height: 100px; padding: 10px; }
   .discovery-access .discovery-metrics small { font-size: .58rem; -webkit-line-clamp: 3; }
 }
+/* Larger, higher profile inside the fixed founder card */
+.discovery-founder .discovery-founder-layout { grid-template-rows: 260px auto; align-content: start; margin-top: -14px; }
+.discovery-founder-profile { height: 260px; }
+.discovery-founder-profile::before { width: 340px; height: 215px; }
+.discovery-founder-profile::after { top: -48px; height: 305px; }
+.discovery-founder .founder-profile-stage { width: 225px; height: 260px; }
+.discovery-founder .founder-profile-stage .founding-profile-wrap { transform: translate(-50%, -50%) scale(.62); }
+.discovery-founder .founder-profile-stage::after { width: 250px; }
+@media (max-width: 767px) {
+  .discovery-founder .discovery-founder-layout { grid-template-rows: 250px auto; margin-top: -22px; }
+  .discovery-founder-profile { height: 250px; }
+  .discovery-founder-profile::before { width: 300px; height: 190px; }
+  .discovery-founder-profile::after { top: -42px; height: 280px; }
+  .discovery-founder .founder-profile-stage { width: 205px; height: 250px; }
+  .discovery-founder .founder-profile-stage .founding-profile-wrap { transform: translate(-50%, -50%) scale(.57); }
+}
+@media (max-width: 390px) {
+  .discovery-founder .discovery-founder-layout { grid-template-rows: 240px auto; margin-top: -24px; }
+  .discovery-founder-profile { height: 240px; }
+  .discovery-founder .founder-profile-stage { width: 195px; height: 240px; }
+  .discovery-founder .founder-profile-stage .founding-profile-wrap { transform: translate(-50%, -50%) scale(.54); }
+}
+/* Single center axis for the complete founder-card composition */
+.discovery-founder .discovery-founder-layout { width: 100%; justify-items: center; text-align: center; }
+.discovery-founder-profile { justify-self: center; margin-inline: auto; }
+.discovery-founder .founder-profile-stage { right: auto; left: auto; justify-self: center; margin-inline: auto; }
+.discovery-founder .founder-profile-stage .founding-profile-wrap { right: auto; margin: 0; }
+.discovery-founder-copy { justify-self: center; align-self: start; margin-inline: auto; text-align: center; }
+.discovery-founder-copy .quote-signal { display: flex; width: max-content; justify-content: center; margin-inline: auto; }
+.discovery-founder-copy blockquote,
+.discovery-founder-copy > p { margin-right: auto; margin-left: auto; text-align: center; }
+body[data-language="ar"] .discovery-founder-copy { direction: rtl; text-align: center; }
+/* Vertically center the founder profile-and-quote group */
+.discovery-founder .discovery-founder-layout { flex: 1 1 auto; align-content: center; margin-top: 0; margin-bottom: 0; }
+@media (max-width: 767px) {
+  .discovery-founder .discovery-founder-layout { align-content: center; margin-top: 0; }
+}
+@media (max-width: 390px) {
+  .discovery-founder .discovery-founder-layout { align-content: center; margin-top: 0; }
+}

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useLayoutEffect, useMemo, useState } from 'react';
 import { translateText } from '../i18n/translations';
 
 const LanguageContext = createContext(null);
@@ -31,7 +31,7 @@ function translateNode(node, language, force = false) {
 export function LanguageProvider({ children }) {
   const [language, setLanguageState] = useState(() => localStorage.getItem('site-language') || 'en');
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const apply = () => {
       document.documentElement.lang = language;
       document.body.dataset.language = language;

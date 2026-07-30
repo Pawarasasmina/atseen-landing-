@@ -29,6 +29,7 @@ import LegalModal from '../components/LegalModal';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import Reveal from '../components/Reveal';
 import api from '../lib/api';
+import { useLanguage } from '../context/LanguageContext';
 
 const steps = [
   ['01', 'Apply', 'Two minutes: who you are, where you create, and the World people would step into.', ClipboardCheck],
@@ -200,6 +201,7 @@ function CreatorBenefits() {
 }
 
 export default function LandingPage() {
+  const { t } = useLanguage();
   const [legal, setLegal] = useState(null);
   const [showFloatingApply, setShowFloatingApply] = useState(false);
   const heroApplyRef = useRef(null);
@@ -275,7 +277,7 @@ export default function LandingPage() {
             <a href="https://t.me/atseen" target="_blank" rel="noreferrer"><Send size={15} /> Telegram</a>
           </div>
           <div className="footer-emails"><a href="mailto:creators@atseen.com">creators@atseen.com</a><span>·</span><a href="mailto:hello@atseen.com">hello@atseen.com</a></div>
-          <p><BrandName /> · we see you every day.</p>
+          <p><BrandName /> <span aria-hidden="true">·</span> {t('we see you every day.')}</p>
           <div className="footer-legal"><button onClick={() => setLegal('Privacy Notice')}>Privacy Notice</button><span>·</span><button onClick={() => setLegal('Early Access Terms')}>Early Access Terms</button><span>·</span><a href="mailto:privacy@atseen.com">Contact</a></div>
         </div>
       </footer>
