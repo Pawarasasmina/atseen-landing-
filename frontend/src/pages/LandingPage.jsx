@@ -96,12 +96,7 @@ function Nav() {
     <header className="site-nav site-nav-scrolled">
       <nav className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5">
         <a href="#top" aria-label="@seen home"><Brand /></a>
-        <div className="hidden items-center gap-7 md:flex">
-          <a className="nav-link" href="#status">Status</a>
-          <a className="nav-link" href="#experience">How it works</a>
-          <a className="nav-link" href="#apply">Apply</a>
-          <a href="/admin/login" className="text-sm text-white/40 transition hover:text-white">Login</a>
-        </div>
+        
         <div className="nav-actions"><LanguageSwitcher /><a href="#apply" className="glow-button glow-button-small"><span>Apply now</span></a></div>
       </nav>
     </header>
