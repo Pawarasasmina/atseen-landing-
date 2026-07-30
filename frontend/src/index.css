@@ -2079,6 +2079,9 @@ select.field { color-scheme: dark; }
 .founder-story-copy { grid-column: 2; grid-row: 1; min-width: 0; text-align: left; }
 .founder-story-copy .quote-signal { justify-content: flex-start; margin: 0 0 1rem; }
 .founder-story-copy blockquote { max-width: 540px; margin: 0; font-size: clamp(1.35rem, 2.5vw, 2rem); }
+.founder-story-copy blockquote span { display: block; white-space: nowrap; }
+.founder-story-copy blockquote i { font-style: normal; }
+html:not([lang="en"]) .founder-story-copy blockquote { font-size: clamp(.95rem, 1.85vw, 1.7rem); }
 .founder-story-copy p { margin-top: .75rem; }
 .founder-story-profile { display: grid; grid-column: 1; grid-row: 1; min-width: 0; place-items: center; }
 .founder-profile-stage { position: relative; isolation: isolate; display: grid; width: 260px; height: 340px; place-items: center; }
@@ -2094,7 +2097,8 @@ select.field { color-scheme: dark; }
   .founder-story { padding: 0 .85rem; }
   .founder-story-inner { grid-template-columns: minmax(0, 1fr) 132px; gap: .3rem; min-height: 270px; padding: 1.4rem 0; }
   .founder-story-copy .quote-signal { margin-bottom: .45rem; transform: scale(.72); transform-origin: left center; }
-  .founder-story-copy blockquote { font-size: .88rem; line-height: 1.38; }
+  .founder-story-copy blockquote { font-size: clamp(.62rem, 2.8vw, .88rem); line-height: 1.38; }
+  html:not([lang="en"]) .founder-story-copy blockquote { font-size: clamp(.48rem, 2.05vw, .74rem); }
   .founder-story-copy p { margin-top: .5rem; font-size: .56rem; }
   .founder-profile-stage { width: 132px; height: 230px; transform: translate(-145px, -28px); }
   .founder-profile-stage .founding-profile-wrap { transform: scale(.42); transform-origin: center; }
@@ -2109,14 +2113,14 @@ select.field { color-scheme: dark; }
 /* Stable mobile placement for the founding story. */
 @media (max-width: 700px) {
   .founder-story-inner { position: relative; display: block; min-height: 280px; }
-  .founder-story-copy { position: absolute; inset: 0 0 0 auto; display: flex; width: 56%; flex-direction: column; justify-content: center; }
-  .founder-story-profile { position: absolute; inset: 0 auto 0 0; display: grid; width: 42%; place-items: center; }
+  .founder-story-copy { position: absolute; inset: 0 0 0 auto; display: flex; width: 61%; flex-direction: column; justify-content: center; }
+  .founder-story-profile { position: absolute; inset: 0 auto 0 0; display: grid; width: 37%; place-items: center; }
   .founder-profile-stage { position: relative; width: 132px; min-width: 0; max-width: 132px; height: 230px; transform: none; }
   .founder-profile-stage .founding-profile-wrap { position: absolute; top: 50%; left: 50%; width: 304px; transform: translate(-50%, -50%) scale(.38); transform-origin: center; }
 }
 @media (max-width: 370px) {
-  .founder-story-copy { width: 55%; }
-  .founder-story-profile { width: 43%; }
+  .founder-story-copy { width: 61%; }
+  .founder-story-profile { width: 37%; }
   .founder-profile-stage { width: 118px; max-width: 118px; transform: none; }
   .founder-profile-stage .founding-profile-wrap { transform: translate(-50%, -50%) scale(.34); }
 }
@@ -2174,9 +2178,24 @@ select.field { color-scheme: dark; }
 /* Keep the English composition stable when machine-translated copy expands. */
 html, body, .site-shell { direction: ltr !important; }
 .notranslate { direction: ltr !important; }
+/* Russian hero copy is intentionally composed as two lines:
+   "Будьте замечены" / "первыми". */
+html[lang="ru"] .founding-hero h1 { white-space: nowrap; }
+html[lang="ru"] .founding-hero h1 span { display: block; }
+
+@media (max-width: 767px) {
+  html[lang="ru"] .founding-hero h1 {
+    font-size: clamp(1.9rem, 9.6vw, 3.75rem);
+    letter-spacing: -.055em;
+  }
+  html:is([lang="es"], [lang="pt"], [lang="fr"]) .founding-hero h1 {
+    font-size: clamp(2.35rem, 12vw, 3.3rem);
+  }
+}
 @media (min-width: 768px) {
   html:not([lang="en"]) .founding-hero-inner { max-width: 940px; }
   html:not([lang="en"]) .founding-hero h1 { font-size: clamp(3.35rem, 5.4vw, 5.1rem); text-wrap: balance; }
+  html:is([lang="es"], [lang="pt"], [lang="fr"]) .founding-hero h1 { font-size: clamp(2.75rem, 4.8vw, 4.6rem); letter-spacing: -.05em; }
   html:not([lang="en"]) .section-title { font-size: clamp(2.2rem, 3.8vw, 3.7rem); text-wrap: balance; }
   html:not([lang="en"]) .hero-creator-count { position: static; width: auto; margin-top: 18px; transform: none; }
   html:not([lang="en"]) .founding-hero { min-height: clamp(500px, 62vh, 620px); }

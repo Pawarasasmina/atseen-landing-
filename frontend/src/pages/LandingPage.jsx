@@ -262,7 +262,7 @@ export default function LandingPage() {
           <div className="founder-story-inner">
             <Reveal className="founder-story-copy">
               <div className="quote-signal" aria-hidden="true"><Eye size={21} /><i /><Sparkles size={14} /></div>
-              <blockquote>&ldquo;Followers look. Fans invest.<br />We built the place where they can.&rdquo;</blockquote>
+              <blockquote><span><i aria-hidden="true">&ldquo;</i>Followers look. Fans invest.</span><span>We built the place where they can.<i aria-hidden="true">&rdquo;</i></span></blockquote>
               <p>&mdash; the <BrandName /> founding team</p>
             </Reveal>
             <Reveal className="founder-story-profile"><CompactFoundingProfile /></Reveal>
